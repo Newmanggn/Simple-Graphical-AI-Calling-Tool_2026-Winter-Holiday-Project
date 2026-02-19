@@ -1,5 +1,7 @@
 # Simple-Graphical-AI-Calling-Tool_2026-Winter-Holiday-Project
 一个使用Python+Flask开发的简单图形化AI调用工具，支持拖拽式模块配置、连线式流程定义、一键代码转换、自定义模块、运行状态可视化等功能，让AI应用开发更简单！
+
+注意关注“项目目前状态”文件，以明确目前情况
 # 简单图形化AI调用工具
 
 一个使用Python+Flask开发的图形化AI模型调用和流程编排工具，通过拖拽式模块配置、连线式流程定义，让AI应用开发更简单！
