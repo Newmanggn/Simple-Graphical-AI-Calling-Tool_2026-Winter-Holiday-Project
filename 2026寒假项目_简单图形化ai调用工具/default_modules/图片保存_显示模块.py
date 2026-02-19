@@ -1,13 +1,13 @@
-#input_quantity=1      # 输入端口数量
-#variable_quantity=4    # 变量数量
-#userinput=false          # 是否支持用户输入
-#setting=true            # 是否支持设置
-#output_quantity=0      # 输出端口数量
-#time_late=0            # 延迟时间
-#name=图片保存/显示模块    # 模块名称
-#excitedbydata=true        # 是否可被数据激活
+#input_quantity=1
+#variable_quantity=4
+#userinput=false
+#setting=true
+#output_quantity=0
+#time_late=0
+#name=图片保存/显示模块
+#excitedbydata=true
 #variables_name=RGB图像张量
-#kind=输出模块            # 模块类型
+#kind=输出模块
 
 import os
 import time

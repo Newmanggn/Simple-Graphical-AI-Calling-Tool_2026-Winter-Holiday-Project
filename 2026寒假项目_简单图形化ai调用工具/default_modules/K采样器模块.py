@@ -1,13 +1,13 @@
-#input_quantity=5      # 输入端口数量
-#variable_quantity=5    # 变量数量
-#userinput=false          # 是否支持用户输入
-#setting=true            # 是否支持设置
-#output_quantity=1      # 输出端口数量
-#time_late=0            # 延迟时间
-#name=K采样器模块          # 模块名称
-#excitedbydata=true        # 是否可被数据激活
+#input_quantity=5
+#variable_quantity=5
+#userinput=false
+#setting=true
+#output_quantity=1
+#time_late=0
+#name=K采样器模块
+#excitedbydata=true
 #variables_name=UNet模型,正面文本向量,负面文本向量,空Latent张量,采样参数
-#kind=调用模块            # 模块类型
+#kind=调用模块
 #output_name=生成的Latent张量
 
 import random

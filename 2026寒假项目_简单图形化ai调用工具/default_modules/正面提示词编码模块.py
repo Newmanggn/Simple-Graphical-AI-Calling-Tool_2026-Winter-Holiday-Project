@@ -1,13 +1,13 @@
-#input_quantity=2      # 输入端口数量
-#variable_quantity=3    # 变量数量
-#userinput=false          # 是否支持用户输入
-#setting=true            # 是否支持设置
-#output_quantity=1      # 输出端口数量
-#time_late=0            # 延迟时间
-#name=正面提示词编码模块    # 模块名称
-#excitedbydata=true        # 是否可被数据激活
-#variables_name=优化后CLIP,正面提示词,最大Token长度,提示词输入  # 变量名称
-#kind=处理模块            # 模块类型
+#input_quantity=2
+#variable_quantity=3
+#userinput=false
+#setting=true
+#output_quantity=1
+#time_late=0
+#name=正面提示词编码模块
+#excitedbydata=true
+#variables_name=优化后CLIP,正面提示词,最大Token长度,提示词输入
+#kind=处理模块
 #output_name=正面文本向量
 
 """

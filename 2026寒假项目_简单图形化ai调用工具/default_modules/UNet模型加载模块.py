@@ -1,13 +1,13 @@
-#input_quantity=0      # 输入端口数量
-#variable_quantity=3    # 变量数量
-#userinput=false          # 是否支持用户输入
-#setting=true            # 是否支持设置
-#output_quantity=1      # 输出端口数量
-#time_late=0            # 延迟时间
-#name=UNet模型加载模块    # 模块名称
-#excitedbydata=true        # 是否可被数据激活
-#variables_name=权重路径,数据类型,加载设备  # 变量名称
-#kind=输入模块            # 模块类型
+#input_quantity=0
+#variable_quantity=3
+#userinput=false
+#setting=true
+#output_quantity=1
+#time_late=0
+#name=UNet模型加载模块
+#excitedbydata=true
+#variables_name=权重路径,数据类型,加载设备
+#kind=输入模块
 #output_name=UNet模型
 
 import os

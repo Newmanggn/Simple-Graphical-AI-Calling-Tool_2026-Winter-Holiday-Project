@@ -1,13 +1,13 @@
-#input_quantity=2      # 输入端口数量
-#variable_quantity=2    # 变量数量
-#userinput=false          # 是否支持用户输入
-#setting=true            # 是否支持设置
-#output_quantity=1      # 输出端口数量
-#time_late=0            # 延迟时间
-#name=VAE解码模块          # 模块名称
-#excitedbydata=true        # 是否可被数据激活
+#input_quantity=2
+#variable_quantity=2
+#userinput=false
+#setting=true
+#output_quantity=1
+#time_late=0
+#name=VAE解码模块
+#excitedbydata=true
 #variables_name=生成的Latent张量,VAE解码器
-#kind=处理模块            # 模块类型
+#kind=处理模块
 #output_name=RGB图像张量
 
 """
