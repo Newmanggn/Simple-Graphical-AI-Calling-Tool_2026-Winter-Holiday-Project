@@ -205,3 +205,63 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ==============================
+# System & Editor Ignore Rules
+# ==============================
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Tree editor cache
+.tree/
+*.tree-cache
+
+# VS Code (optional, if used)
+.vscode/
+*.code-workspace
+
+# JetBrains (optional, if used)
+.idea/
+*.iml
+
+# ==============================
+# AI Tool Specific Ignore Rules
+# ==============================
+# AI model binary files
+*.gguf
+*.bin
+*.pt
+*.pth
+*.onnx
+*.ckpt
+*.safetensors
+
+# Model storage directories
+models/
+checkpoints/
+pretrained_models/
+
+# Large dataset files/dirs
+datasets/
+data/
+*.zip
+*.tar.gz
+*.rar
+
+# Local config & sensitive files
+.env.local
+config_private.py
+secrets.json
+
+# AI framework cache
+.cache/
+.cache/huggingface/
+.cache/torch/
