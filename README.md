@@ -76,6 +76,7 @@ pip install flask customtkinter pillow numpy requests
 ```bash
 python app.py
 ```
+通过start_app.vbs一键启动可能存在无法关闭flask服务器的问题，若出现，请从任务管理器关闭
 
 3. 在浏览器中访问：`http://localhost:5000`
 
