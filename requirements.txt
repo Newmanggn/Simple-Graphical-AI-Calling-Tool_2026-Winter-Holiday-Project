@@ -1,15 +1,38 @@
+# ================= 基础依赖（必需）=================
 # Web服务器框架
 flask>=2.0.0
 
 # HTTP请求库，用于调用LM Studio等API
 requests>=2.25.0
 
-# ================= 可选依赖（AI绘图功能）=================
+# GUI框架
+customtkinter>=5.0.0
+
+# 图像处理库
+pillow>=10.0.0
+
+# 数值计算库
+numpy>=1.24.0
+
+# ================= AI绘图依赖（可选）=================
 # 以下库为可选依赖，仅在使用AI绘图模块时需要：
+# 可以通过 GUI 的「一键安装」功能自动安装
+
+# PyTorch（CUDA版本，NVIDIA显卡）
 # torch>=2.0.0
 # torchvision>=0.15.0
-# diffusers>=0.20.0
-# transformers>=4.30.0
-# pillow>=10.0.0
-# numpy>=1.24.0
+# torchaudio>=2.0.0
 
+# PyTorch（CPU版本，AMD/Intel显卡配合DML使用）
+# torch==2.0.1
+# torchvision==0.15.2
+# torchaudio==2.0.2
+
+# DirectML支持（AMD/Intel显卡）
+# torch-directml>=0.2.0
+
+# Stable Diffusion相关
+safetensors>=0.3.0
+transformers>=4.30.0
+accelerate>=0.20.0
+diffusers>=0.20.0
