@@ -1,0 +1,6 @@
+{
+  "模型文件夹路径": "F:/2026寒假项目_简单图形化ai调用工具/models",
+  "默认图片保存路径": "F:/2026寒假项目_简单图形化ai调用工具/output",
+  "生成引擎": "CUDA GPU 0: NVIDIA GeForce RTX 4060 (8 GB)",
+  "使用 CPU 运行 VAE": false
+}

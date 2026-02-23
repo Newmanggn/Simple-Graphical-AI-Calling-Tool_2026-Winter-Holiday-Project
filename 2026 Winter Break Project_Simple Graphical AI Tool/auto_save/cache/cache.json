@@ -1,0 +1,207 @@
+{
+  "version": "1.0",
+  "modules": [
+    {
+      "id": "f7fea86a-8340-4f7f-8c9b-b5e418ad2b47",
+      "name": "调用模块",
+      "kind": "调用模块",
+      "left": "312px",
+      "top": "327px",
+      "moduleData": {
+        "name": "调用模块",
+        "params": {
+          "excitedbydata": false,
+          "input_quantity": 4,
+          "inputtingwindow_quantity": 0,
+          "kind": "调用模块",
+          "name": "调用模块",
+          "output_name": "生成结果,更新后的上下文",
+          "output_quantity": 2,
+          "setting": true,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 1,
+          "userinput": false,
+          "variable_quantity": 6,
+          "variables_name": "模型选择,提示词,上下文,对话,服务商,模型ID,API密钥"
+        }
+      },
+      "settings": {
+        "模型选择": "",
+        "提示词": "",
+        "上下文": "",
+        "对话": "",
+        "服务商": "",
+        "模型ID": "",
+        "model_source": "api",
+        "api_key": "123",
+        "lmstudio_host": "http://localhost:1234",
+        "lmstudio_model": "",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "top_k": 40,
+        "repetition_penalty": 1.1,
+        "presence_penalty": 0,
+        "frequency_penalty": 0,
+        "max_tokens": 1024,
+        "stop_words": "",
+        "seed": 0
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "0118dc71-67d0-4bdb-877b-4e2846f3f149",
+      "name": "对话输出",
+      "kind": "输出模块",
+      "left": "550px",
+      "top": "326px",
+      "moduleData": {
+        "name": "对话输出",
+        "params": {
+          "excitedbydata": true,
+          "input_quantity": 1,
+          "inputtingwindow_quantity": 0,
+          "kind": "输出模块",
+          "name": "对话输出",
+          "output_name": "",
+          "output_quantity": 0,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 0,
+          "variables_name": "内容"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "267f2915-9564-487b-8e3c-9fae6f8c8abc",
+      "name": "user输入",
+      "kind": "输入模块",
+      "left": "56px",
+      "top": "456px",
+      "moduleData": {
+        "name": "user输入",
+        "params": {
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "输入模块",
+          "name": "user输入",
+          "output_name": "user_input",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 0,
+          "variables_name": ""
+        }
+      },
+      "settings": {},
+      "inputValue": "你能听到我说话吗"
+    },
+    {
+      "id": "759c171e-cba1-412b-9622-8108ac9b0c73",
+      "name": "固定值输出模块",
+      "kind": "处理模块",
+      "left": "17px",
+      "top": "275px",
+      "moduleData": {
+        "name": "固定值输出模块",
+        "params": {
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "处理模块",
+          "name": "固定值输出模块",
+          "output_name": "输出值",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 1,
+          "variables_name": "固定值"
+        }
+      },
+      "settings": {},
+      "inputValue": "回答的第一句话应是“用户你好”，后面是正常的回答"
+    },
+    {
+      "id": "86f085e9-f961-441f-b320-d11803e15209",
+      "name": "缓存模块",
+      "kind": "处理模块",
+      "left": "314px",
+      "top": "525px",
+      "moduleData": {
+        "name": "缓存模块",
+        "params": {
+          "excitedbydata": true,
+          "input_quantity": 1,
+          "inputtingwindow_quantity": 0,
+          "kind": "处理模块",
+          "name": "缓存模块",
+          "output_name": "output",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 1,
+          "variables_name": "input"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    }
+  ],
+  "connections": [
+    {
+      "startModuleId": "f7fea86a-8340-4f7f-8c9b-b5e418ad2b47",
+      "startPortIndex": 0,
+      "endModuleId": "0118dc71-67d0-4bdb-877b-4e2846f3f149",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "267f2915-9564-487b-8e3c-9fae6f8c8abc",
+      "startPortIndex": 0,
+      "endModuleId": "f7fea86a-8340-4f7f-8c9b-b5e418ad2b47",
+      "endPortIndex": 3,
+      "isRed": false
+    },
+    {
+      "startModuleId": "759c171e-cba1-412b-9622-8108ac9b0c73",
+      "startPortIndex": 0,
+      "endModuleId": "f7fea86a-8340-4f7f-8c9b-b5e418ad2b47",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "f7fea86a-8340-4f7f-8c9b-b5e418ad2b47",
+      "startPortIndex": 1,
+      "endModuleId": "86f085e9-f961-441f-b320-d11803e15209",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "86f085e9-f961-441f-b320-d11803e15209",
+      "startPortIndex": 0,
+      "endModuleId": "f7fea86a-8340-4f7f-8c9b-b5e418ad2b47",
+      "endPortIndex": 2,
+      "isRed": false
+    }
+  ],
+  "canvasSize": {
+    "width": 800,
+    "height": 1200
+  },
+  "timestamp": "2026-02-23T14:17:06.108Z"
+}
