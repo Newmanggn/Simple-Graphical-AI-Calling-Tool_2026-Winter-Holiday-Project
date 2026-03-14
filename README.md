@@ -40,47 +40,23 @@ B站专栏：https://www.bilibili.com/opus/1172650239378587687
 
 ## 🚀 快速开始
 
-### 环境要求
+### 1. 系统要求
 
-- Python 3.8+
-- Windows 系统（推荐）
+- **操作系统**：Windows 系统（推荐）
+- **Python 版本**：Python 3.8
+- **硬件要求**：
+  - 基本运行：任何现代 CPU
+  - AI 绘图：至少16G以上内存、8G以上显存
 
-### 方式一：GUI 一键安装（推荐）
 
-1. 运行 GUI 配置工具：
-```bash
-python app.py
-```
+### 2. 安装方法
+  无需安装
 
-2. 在 GUI 的「高级设置」中点击「一键安装」，根据你的显卡类型选择：
-   - **仅安装 CUDA** - 如果你有 NVIDIA 显卡
-   - **仅安装 DML** - 如果你有 AMD/Intel 显卡
-   - **全部安装** - 安装两种环境
+### 3. 启动和运行
 
-3. 点击「一键启动」按钮，浏览器会自动打开
-
-### 方式二：使用 install_basic.bat（Windows）
-
-1. 双击 `install_basic.bat` 一键安装基础依赖
-
-2. 运行 `python app.py` 启动 GUI
-
-3. 在 GUI 的「高级设置」中点击「一键安装」安装 AI 绘图依赖
-
-### 方式三：手动安装
-
-1. 安装基础依赖：
-```bash
-pip install flask customtkinter pillow numpy requests
-```
-
-2. 运行应用：
-```bash
-python app.py
-```
-通过start_app.vbs一键启动可能存在无法关闭flask服务器的问题，若出现，请从任务管理器关闭
-
-3. 在浏览器中访问：`http://localhost:5000`
+1. 双击 `launcher.exe`
+2. 在 GUI 界面中，完整设置，点击「一键启动」按钮
+3. 系统会自动打开浏览器，显示图形化编辑界面
 
 ## 📖 详细文档
 
@@ -104,10 +80,9 @@ python app.py
 ├── output/                    # 生成的图像输出目录
 ├── requirements.txt           # 依赖列表
 ├── install_basic.bat         # Windows 一键安装基础依赖
-├── start_app.vbs             # Windows 快捷启动脚本
+├── launcher.exe              # 启动器可执行文件
 └── 说明文档.md                # 完整文档（中文）
 ```
-
 
 
 ## 💬 联系方式
