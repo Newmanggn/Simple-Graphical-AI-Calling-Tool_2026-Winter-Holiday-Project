@@ -1,0 +1,434 @@
+{
+  "version": "1.0",
+  "modules": [
+    {
+      "id": "8b37610a-7a9b-413f-bfa8-e0cbdd88af86",
+      "name": "user输入",
+      "kind": "输入模块",
+      "left": "235px",
+      "top": "607px",
+      "moduleData": {
+        "name": "user输入",
+        "params": {
+          "description": "用户输入模块\n\n功能：\n- 获取用户在界面上输入的内容\n- 作为工作流的起点，触发整个工作流的执行\n- 无输入端口，直接从用户界面获取输入\n\n使用场景：\n- 需要用户提供输入的工作流\n- 作为对话系统的起点\n- 作为文生图、图生图等工作流的输入源\n\n输入：\n- 无输入端口，直接从用户界面获取\n\n输出：\n- user_input：用户输入的内容\n\n端口详细说明：\n- 输入端口：0个（无输入）\n- 输出端口：1个\n  - 端口0: 用户输入值（用户输入的文本）",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "输入模块",
+          "name": "user输入",
+          "output_name": "user_input",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 0,
+          "variables_name": ""
+        }
+      },
+      "settings": {},
+      "inputValue": "birds fly in the sky\n"
+    },
+    {
+      "id": "45800407-59ef-4dd4-b067-f90bb44f942f",
+      "name": "Checkpoint加载器",
+      "kind": "加载器",
+      "left": "285px",
+      "top": "388px",
+      "moduleData": {
+        "name": "Checkpoint加载器",
+        "params": {
+          "description": "Checkpoint加载器模块\n\n功能：\n- 纯指路牌，只传模型文件路径，不加载不运算\n- 自动扫描指定文件夹中的模型文件\n- 从GUI设置中读取默认模型路径\n\n使用场景：\n- 作为Stable Diffusion工作流的起点，提供模型路径\n- 在需要模型路径的工作流中使用\n\n输入：\n- 模型文件夹路径：模型所在的文件夹\n- 模型文件选择：具体的模型文件路径\n\n输出：\n- model：选中的模型文件路径字符串\n- vae：VAE模型文件路径字符串\n- clip：CLIP模型文件路径字符串\n\n端口详细说明：\n- 输入端口：0个（无输入）\n- 输出端口：3个\n  - 端口0: model（模型路径）\n  - 端口1: vae（VAE模型路径）\n  - 端口2: clip（CLIP模型路径）",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "kind": "加载器",
+          "name": "Checkpoint加载器",
+          "output_name": "model,vae,clip",
+          "output_quantity": 3,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "模型文件夹路径,模型文件选择"
+        }
+      },
+      "settings": {
+        "模型文件夹路径": "F:/2026寒假项目_简单图形化ai调用工具/models",
+        "模型文件选择": "F:/2026寒假项目_简单图形化ai调用工具/models\\checkpoints\\anything-v5-PrtRE.safetensors"
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "0a286557-79bc-4ec0-b00c-243049305e70",
+      "name": "K采样器模块",
+      "kind": "采样",
+      "left": "951px",
+      "top": "533px",
+      "moduleData": {
+        "name": "K采样器模块",
+        "params": {
+          "description": "K采样器模块（Inpaint增强版）\n\n功能：\n- 执行Stable Diffusion的采样过程\n- 支持文生图、图生图和遮罩重绘\n- 增强的Inpaint功能，确保mask区域精准生成\n- 支持多种采样器（Euler、DDIM、DPM）\n- 支持模型和调度器缓存，提高性能\n\n使用场景：\n- 作为Stable Diffusion工作流的核心采样步骤\n- 用于生成新图像或修改现有图像\n\n输入：\n- 模型：模型文件路径\n- 正面条件：正面提示词的编码向量\n- 负面条件：负面提示词的编码向量\n- Latent图像：潜在空间的图像张量\n- 种子：随机种子\n- 生成后控制：生成后控制参数\n- 步数：采样步数\n- cfg：CFG缩放因子\n- 采样器名称：采样器类型\n- 调度器：调度器类型\n- 降噪：降噪强度\n\n输出：\n- 生成的Latent张量：采样后的潜在空间图像\n\n端口详细说明：\n- 输入端口：4个\n  - 端口0: 模型（模型路径）\n  - 端口1: 正面条件（正面提示词编码）\n  - 端口2: 负面条件（负面提示词编码）\n  - 端口3: Latent图像（潜在空间图像）\n- 输出端口：1个\n  - 端口0: 生成的Latent张量（采样后结果）",
+          "excitedbydata": true,
+          "input_quantity": 4,
+          "kind": "采样",
+          "name": "K采样器模块",
+          "output_name": "生成的Latent张量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 11,
+          "variables_name": "模型,正面条件,负面条件,Latent图像,种子,生成后控制,步数,cfg,采样器名称,调度器,降噪"
+        }
+      },
+      "settings": {
+        "Latent图像": "",
+        "cfg": "8",
+        "模型": "",
+        "正面条件": "",
+        "步数": "30",
+        "生成后控制": "randomize",
+        "种子": "123456",
+        "调度器": "karras",
+        "负面条件": "",
+        "采样器名称": "euler",
+        "降噪": "0.85"
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "9ba3c964-6c86-402f-be77-b5aae8c57d96",
+      "name": "固定值输出模块",
+      "kind": "处理模块",
+      "left": "232px",
+      "top": "861px",
+      "moduleData": {
+        "name": "固定值输出模块",
+        "params": {
+          "description": "固定值输出模块\n\n功能：\n- 输出用户设置的固定值\n- 支持通过设置界面修改固定值\n\n使用场景：\n- 作为工作流中的常量输入\n- 用于提供固定的参数值\n- 作为负面提示词等固定值的来源\n\n输入：\n- 无输入端口，通过设置界面设置固定值\n\n输出：\n- 输出值：用户设置的固定值\n\n端口详细说明：\n- 输入端口：0个（无输入）\n- 输出端口：1个\n  - 端口0: 固定值（固定的文本值）",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "处理模块",
+          "name": "固定值输出模块",
+          "output_name": "输出值",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 1,
+          "variables_name": "固定值"
+        }
+      },
+      "settings": {},
+      "inputValue": "ugly, deformed, blurry, low resolution, low quality, jpeg artifacts, pixelated, out of frame, cropped, bad anatomy, bad hands, missing fingers, extra limbs, mutated hands, poorly drawn face, poorly drawn hands, watermark, text, signature, username, error, disfigured, ugly, gross, disgusting, ugly face, deformed fingers, long neck, cross-eyed, closed eyes, weird eyes, bad lighting, dull colors, overexposed, underexposed, cartoon, anime, 3d render, cgi, painting, illustration, sketch, ugly background, messy background, boring background, duplicate, morbid, mutilated"
+    },
+    {
+      "id": "1d16c0ce-4c84-4c80-8485-d3e879af6033",
+      "name": "CLIP文本编码模块",
+      "kind": "模型条件",
+      "left": "649px",
+      "top": "546px",
+      "moduleData": {
+        "name": "CLIP文本编码模块",
+        "params": {
+          "description": "CLIP文本编码模块\n\n功能：\n- 加载CLIP模型权重\n- 编码提示词为文本向量\n- 支持模型缓存，避免重复加载\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n\n使用场景：\n- 作为Stable Diffusion工作流的提示词编码步骤\n- 在需要文本特征提取的工作流中使用\n\n输入：\n- CLIP模型：CLIP模型文件路径\n- 提示词：需要编码的文本提示词\n\n输出：\n- 文本向量：编码后的文本特征向量\n\n端口详细说明：\n- 输入端口：2个\n  - 端口0: CLIP模型（模型路径）\n  - 端口1: 提示词（文本提示词）\n- 输出端口：1个\n  - 端口0: 文本向量（编码后的文本特征）",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "模型条件",
+          "name": "CLIP文本编码模块",
+          "output_name": "文本向量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "CLIP模型,提示词"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "f90f3e1d-1f15-4cef-9fa9-528f73a8f962",
+      "name": "CLIP文本编码模块",
+      "kind": "模型条件",
+      "left": "654px",
+      "top": "677px",
+      "moduleData": {
+        "name": "CLIP文本编码模块",
+        "params": {
+          "description": "CLIP文本编码模块\n\n功能：\n- 加载CLIP模型权重\n- 编码提示词为文本向量\n- 支持模型缓存，避免重复加载\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n\n使用场景：\n- 作为Stable Diffusion工作流的提示词编码步骤\n- 在需要文本特征提取的工作流中使用\n\n输入：\n- CLIP模型：CLIP模型文件路径\n- 提示词：需要编码的文本提示词\n\n输出：\n- 文本向量：编码后的文本特征向量\n\n端口详细说明：\n- 输入端口：2个\n  - 端口0: CLIP模型（模型路径）\n  - 端口1: 提示词（文本提示词）\n- 输出端口：1个\n  - 端口0: 文本向量（编码后的文本特征）",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "模型条件",
+          "name": "CLIP文本编码模块",
+          "output_name": "文本向量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "CLIP模型,提示词"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "6996a9a2-14c7-435a-af98-1790fdd44e73",
+      "name": "VAE解码模块",
+      "kind": "处理模块",
+      "left": "970px",
+      "top": "378px",
+      "moduleData": {
+        "name": "VAE解码模块",
+        "params": {
+          "description": "VAE解码模块（重构版）\n\n功能：\n- 加载VAE模型\n- 正确缩放Latent张量\n- 解码Latent张量为RGB图像\n- 支持模型缓存，提高性能\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n- 支持从GUI设置中读取VAE运行设备配置\n\n使用场景：\n- 作为Stable Diffusion工作流的最后一步，将生成的Latent解码为图像\n- 在需要将Latent转换为图像的工作流中使用\n\n输入：\n- 生成的Latent张量：潜在空间的图像张量\n- VAE解码器：VAE模型文件路径\n\n输出：\n- RGB图像：解码后的PIL图像对象\n\n端口详细说明：\n- 输入端口：2个\n  - 端口0: 生成的Latent张量（Latent张量）\n  - 端口1: VAE解码器（VAE模型路径）\n- 输出端口：1个\n  - 端口0: RGB图像（解码后的图像）",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "处理模块",
+          "name": "VAE解码模块",
+          "output_name": "RGB图像",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "生成的Latent张量,VAE解码器"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "d049979d-0a3c-4470-9ef2-2a3516e1950c",
+      "name": "图片保存/显示模块",
+      "kind": "输出模块",
+      "left": "1249px",
+      "top": "374px",
+      "moduleData": {
+        "name": "图片保存_显示模块",
+        "params": {
+          "description": "图片保存/显示模块\n\n功能：\n- 保存图像到指定路径\n- 显示图像\n- 支持批量图像处理\n- 从GUI设置中读取默认保存路径\n\n使用场景：\n- 作为Stable Diffusion工作流的最后一步，保存和显示生成的图像\n- 在需要保存和显示图像的工作流中使用\n\n输入：\n- RGB图像：PIL图像对象或图像列表\n- 保存路径：图像保存的路径\n- 是否保存：是否保存图像\n\n输出：\n- 无输出端口，只返回保存结果信息\n\n端口详细说明：\n- 输入端口：1个\n  - 端口0: RGB图像（解码后的图像）\n- 输出端口：0个（无输出）",
+          "excitedbydata": true,
+          "input_quantity": 1,
+          "kind": "输出模块",
+          "name": "图片保存/显示模块",
+          "output_quantity": 0,
+          "setting": true,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 3,
+          "variables_name": "RGB图像,保存路径,是否保存"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "f377c83e-7ae4-4b1b-8bdb-417eba661ddb",
+      "name": "加载图像模块",
+      "kind": "图像",
+      "left": "564px",
+      "top": "867px",
+      "moduleData": {
+        "name": "加载图像模块",
+        "params": {
+          "description": "加载图像模块\n\n功能：\n- 加载图像文件\n- 支持预览图像\n- 支持绘制和加载遮罩\n- 处理base64编码的图像数据\n\n使用场景：\n- 作为图生图工作流的起点，加载输入图像\n- 作为遮罩重绘工作流的起点，加载图像和遮罩\n\n输入：\n- 无输入端口，通过设置界面加载图像和遮罩\n\n输出：\n- 图像：加载的PIL图像对象\n- 遮罩：加载的PIL遮罩图像（单通道）\n\n端口详细说明：\n- 输入端口：0个（无输入）\n- 输出端口：2个\n  - 端口0: 图像（加载的图像）\n  - 端口1: 遮罩（遮罩图像）",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "kind": "图像",
+          "name": "加载图像模块",
+          "output_name": "图像,遮罩",
+          "output_quantity": 2,
+          "setting": true,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 0,
+          "variables_name": ""
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "754ad764-fc3b-4091-9a18-5055baf65671",
+      "name": "VAE图像编码模块",
+      "kind": "处理模块",
+      "left": "847px",
+      "top": "800px",
+      "moduleData": {
+        "name": "VAE图像编码模块",
+        "params": {
+          "description": "VAE图像编码模块（极致优化版）\n\n功能：\n- 将PIL图像编码为Latent张量\n- 支持多种图像格式（RGB、灰度图、RGBA）\n- 内存优化，及时清理中间变量\n- 支持自动选择设备（CPU/CUDA/DML）\n- 支持从GUI设置中读取VAE运行设备配置\n\n使用场景：\n- 作为图生图工作流的第一步，将输入图像编码为Latent\n- 在需要处理图像的工作流中使用\n\n输入：\n- vae：VAE模型文件路径\n- 图像：PIL图像对象或图像列表\n\n输出：\n- Latent数据：编码后的潜在空间张量\n\n端口详细说明：\n- 输入端口：2个\n  - 端口0: vae（VAE模型路径）\n  - 端口1: 图像（PIL图像）\n- 输出端口：1个\n  - 端口0: Latent数据（编码后的Latent张量）",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "处理模块",
+          "name": "VAE图像编码模块",
+          "output_name": "Latent数据",
+          "output_quantity": 1,
+          "setting": false,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "vae,图像"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "1e46641f-dc42-4200-9929-62902aa40fbe",
+      "name": "设置Latent噪波遮罩模块",
+      "kind": "处理模块",
+      "left": "1099px",
+      "top": "861px",
+      "moduleData": {
+        "name": "设置Latent噪波遮罩模块",
+        "params": {
+          "description": "设置Latent噪波遮罩模块\n\n功能：\n- 将遮罩添加到Latent张量中\n- 支持处理PIL遮罩对象\n- 自动调整遮罩尺寸以匹配Latent尺寸\n- 为遮罩添加高斯模糊，避免边缘生硬\n\n使用场景：\n- 作为遮罩重绘工作流的中间步骤，为Latent添加遮罩\n- 在需要为Latent添加遮罩的工作流中使用\n\n输入：\n- latent：Latent张量或包含Latent的字典\n- 遮罩：PIL遮罩对象或遮罩列表\n\n输出：\n- Latent：包含Latent张量和噪声遮罩的字典\n\n端口详细说明：\n- 输入端口：2个\n  - 端口0: latent（Latent张量）\n  - 端口1: 遮罩（遮罩图像）\n- 输出端口：1个\n  - 端口0: Latent（包含遮罩的Latent）",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "处理模块",
+          "name": "设置Latent噪波遮罩模块",
+          "output_name": "Latent",
+          "output_quantity": 1,
+          "setting": false,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 0,
+          "variables_name": "latent,遮罩"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    }
+  ],
+  "connections": [
+    {
+      "startModuleId": "8b37610a-7a9b-413f-bfa8-e0cbdd88af86",
+      "startPortIndex": 0,
+      "endModuleId": "1d16c0ce-4c84-4c80-8485-d3e879af6033",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "9ba3c964-6c86-402f-be77-b5aae8c57d96",
+      "startPortIndex": 0,
+      "endModuleId": "f90f3e1d-1f15-4cef-9fa9-528f73a8f962",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "1d16c0ce-4c84-4c80-8485-d3e879af6033",
+      "startPortIndex": 0,
+      "endModuleId": "0a286557-79bc-4ec0-b00c-243049305e70",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "f90f3e1d-1f15-4cef-9fa9-528f73a8f962",
+      "startPortIndex": 0,
+      "endModuleId": "0a286557-79bc-4ec0-b00c-243049305e70",
+      "endPortIndex": 2,
+      "isRed": false
+    },
+    {
+      "startModuleId": "45800407-59ef-4dd4-b067-f90bb44f942f",
+      "startPortIndex": 0,
+      "endModuleId": "0a286557-79bc-4ec0-b00c-243049305e70",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "0a286557-79bc-4ec0-b00c-243049305e70",
+      "startPortIndex": 0,
+      "endModuleId": "6996a9a2-14c7-435a-af98-1790fdd44e73",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "6996a9a2-14c7-435a-af98-1790fdd44e73",
+      "startPortIndex": 0,
+      "endModuleId": "d049979d-0a3c-4470-9ef2-2a3516e1950c",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "45800407-59ef-4dd4-b067-f90bb44f942f",
+      "startPortIndex": 2,
+      "endModuleId": "1d16c0ce-4c84-4c80-8485-d3e879af6033",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "45800407-59ef-4dd4-b067-f90bb44f942f",
+      "startPortIndex": 2,
+      "endModuleId": "f90f3e1d-1f15-4cef-9fa9-528f73a8f962",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "45800407-59ef-4dd4-b067-f90bb44f942f",
+      "startPortIndex": 1,
+      "endModuleId": "6996a9a2-14c7-435a-af98-1790fdd44e73",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "45800407-59ef-4dd4-b067-f90bb44f942f",
+      "startPortIndex": 1,
+      "endModuleId": "754ad764-fc3b-4091-9a18-5055baf65671",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "f377c83e-7ae4-4b1b-8bdb-417eba661ddb",
+      "startPortIndex": 0,
+      "endModuleId": "754ad764-fc3b-4091-9a18-5055baf65671",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "754ad764-fc3b-4091-9a18-5055baf65671",
+      "startPortIndex": 0,
+      "endModuleId": "1e46641f-dc42-4200-9929-62902aa40fbe",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "f377c83e-7ae4-4b1b-8bdb-417eba661ddb",
+      "startPortIndex": 1,
+      "endModuleId": "1e46641f-dc42-4200-9929-62902aa40fbe",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "1e46641f-dc42-4200-9929-62902aa40fbe",
+      "startPortIndex": 0,
+      "endModuleId": "0a286557-79bc-4ec0-b00c-243049305e70",
+      "endPortIndex": 3,
+      "isRed": false
+    }
+  ],
+  "canvasSize": {
+    "width": 1700,
+    "height": 1300
+  },
+  "timestamp": "2026-03-14T15:12:11.255Z"
+}

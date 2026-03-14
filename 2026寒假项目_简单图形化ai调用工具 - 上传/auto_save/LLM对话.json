@@ -1,0 +1,215 @@
+{
+  "version": "1.0",
+  "modules": [
+    {
+      "id": "d44c95ac-a4c2-4f2d-b4a4-f17130690221",
+      "name": "调用模块",
+      "kind": "调用模块",
+      "left": "311px",
+      "top": "329px",
+      "moduleData": {
+        "name": "调用模块",
+        "params": {
+          "description": "加载Service_provider.json配置文件\n    \"\"\"\n    service_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), \"Service_provider.json\")\n    if os.path.exists(service_file):\n        try:\n            with open(service_file, 'r', encoding='utf-8') as f:\n                return json.load(f)\n        except Exception as e:\n            print(f\"加载Service_provider.json失败: {str(e)}\")\n            return {\"service_providers\": []}\n    return {\"service_providers\": []}\n\n# 模型调用函数\ndef call_model(model_params, merged_params, cancel_token=None):\n    \"\"\"\n    调用AI模型生成结果\n    \n    参数:\n    - model_params: 模型参数，包含模型选择等\n    - merged_params: 合并后的所有参数，包含提示词、设置、上下文、对话历史等\n    - cancel_token: 取消令牌，用于检测是否需要取消请求\n    \n    返回:\n    - 生成结果\n    \"\"\"\n    # 默认参数设置\n    default_params = {\n        'model_source': 'lmstudio',  # 默认模型来源\n        'api_key': '',  # 默认API密钥\n        'model': 'gpt-3.5-turbo',  # 默认模型\n        'temperature': 0.7,  # 默认温度\n        'max_tokens': 1000,  # 默认最大 token 数\n        'delay': 0,  # 默认延迟时间\n        'context': '',  # 默认上下文\n        'dialogue_history': [],  # 默认对话历史\n        'service_provider': 'OpenAI',  # 默认服务商\n        # 本地模型默认设置\n        'lmstudio_host': 'http://localhost:1234',  # LM Studio默认地址\n        'lmstudio_model': 'qwen3-4b-instruct-2507-abliterated'  # 默认本地模型\n    }\n    \n    # 合并参数\n    params = {**default_params, **merged_params}\n    \n    # 处理字符串参数\n    if isinstance(model_params, str):\n        model_params = {'model_source': model_params}\n        print(f\"处理字符串模型参数: {model_params}\")\n    elif isinstance(model_params, dict):\n        print(f\"处理字典模型参数: {model_params}\")\n    \n    print(f\"最终参数: {params}\")\n    \n    try:\n        # 检查是否需要取消\n        if cancel_token and cancel_token():\n            raise Exception(\"请求已取消\")\n        \n        # 提取参数\n        model_source = params.get('model_source', 'lmstudio')\n        # 处理空模型来源\n        if not model_source:\n            model_source = 'lmstudio'\n        prompt = params.get('prompt', '')\n        api_key = params.get('api_key', '')\n        context = params.get('context', '')\n        dialogue_history = params.get('dialogue_history', [])\n        user_dialogue = params.get('dialogue', '')\n        delay = params.get('delay', 0)\n        service_provider = params.get('service_provider', 'OpenAI')\n        \n        # 类型检查和转换\n        if isinstance(delay, str):\n            try:\n                delay = float(delay)\n            except ValueError:\n                delay = 0\n        \n        # 处理延迟\n        if delay > 0:\n            # 检查是否需要取消\n            if cancel_token and cancel_token():\n                raise Exception(\"请求已取消\")\n            time.sleep(delay)\n        \n        # 构建完整的上下文\n        full_context = context\n        if dialogue_history:\n            for dialogue in dialogue_history:\n                if 'user' in dialogue:\n                    full_context += f\"\\n用户: {dialogue['user']}\"\n                if 'ai' in dialogue:\n                    full_context += f\"\\nAI: {dialogue['ai']}\"\n        # 添加用户提交的对话内容\n        if user_dialogue:\n            full_context += f\"\\n用户对话: {user_dialogue}\"\n        \n        # 检查是否需要取消\n        if cancel_token and cancel_token():\n            raise Exception(\"请求已取消\")\n        \n        # 根据模型来源生成结果\n        if model_source == 'lmstudio':\n            # 真正调用 LM Studio\n            try:\n                import requests\n                \n                # 构建LM Studio API请求\n                lmstudio_host = params.get('lmstudio_host', 'http://localhost:1234')\n                lmstudio_model = params.get('lmstudio_model', 'qwen3-4b-instruct-2507-abliterated.q5_k_s')\n                \n                # 构建请求数据\n                messages = [\n                    {\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}\n                ]\n                \n                # 获取提示词\n                prompt = params.get('prompt', '')\n                print(f\"构建LM Studio API请求，提示词: {prompt}, 上下文: {context}, 对话历史: {dialogue_history}, 用户对话: {user_dialogue}\")\n                \n                # 添加提示词到messages\n                if prompt:\n                    # 检查prompt是否为字符串\n                    if isinstance(prompt, str):\n                        # 如果是字符串，添加为系统消息\n                        messages.append({\"role\": \"system\", \"content\": f\"提示词: {prompt}\"})\n                        print(f\"添加提示词系统消息: {prompt}\")\n                \n                # 添加上下文到messages\n                if context:\n                    # 检查context是否为字符串\n                    if isinstance(context, str):\n                        # 如果是字符串，直接添加为系统消息\n                        messages.append({\"role\": \"system\", \"content\": f\"上下文信息: {context}\"})\n                        print(f\"添加上下文系统消息: {context}\")\n                    # 检查context是否为对话历史列表\n                    elif isinstance(context, list):\n                        # 如果是列表，添加为对话历史\n                        for dialogue in context:\n                            if isinstance(dialogue, dict):\n                                if 'user' in dialogue:\n                                    messages.append({\"role\": \"user\", \"content\": dialogue['user']})\n                                    print(f\"添加用户对话历史: {dialogue['user']}\")\n                                if 'ai' in dialogue:\n                                    messages.append({\"role\": \"assistant\", \"content\": dialogue['ai']})\n                                    print(f\"添加AI对话历史: {dialogue['ai']}\")\n                \n                # 添加对话历史到messages\n                if dialogue_history:\n                    # 检查dialogue_history是否为字符串\n                    if isinstance(dialogue_history, str):\n                        # 如果是字符串，添加为系统消息\n                        messages.append({\"role\": \"system\", \"content\": f\"对话历史: {dialogue_history}\"})\n                        print(f\"添加对话历史系统消息: {dialogue_history}\")\n                    # 检查dialogue_history是否为列表\n                    elif isinstance(dialogue_history, list):\n                        # 如果是列表，添加为对话历史\n                        for dialogue in dialogue_history:\n                            if isinstance(dialogue, dict):\n                                if 'user' in dialogue:\n                                    messages.append({\"role\": \"user\", \"content\": dialogue['user']})\n                                    print(f\"添加用户对话历史: {dialogue['user']}\")\n                                if 'ai' in dialogue:\n                                    messages.append({\"role\": \"assistant\", \"content\": dialogue['ai']})\n                                    print(f\"添加AI对话历史: {dialogue['ai']}\")\n                \n                # 添加用户提交的对话内容\n                if user_dialogue:\n                    messages.append({\"role\": \"user\", \"content\": user_dialogue})\n                    print(f\"添加用户对话: {user_dialogue}\")\n                \n                print(f\"最终构建的messages: {messages}\")\n                \n                # 构建payload\n                payload = {\n                    \"model\": lmstudio_model,\n                    \"messages\": messages,\n                    \"temperature\": params.get('temperature', 0.7),\n                    \"max_tokens\": params.get('max_tokens', 1000)\n                }\n                \n                # 添加可选参数\n                if 'top_p' in params:\n                    payload['top_p'] = params['top_p']\n                if 'top_k' in params:\n                    payload['top_k'] = params['top_k']\n                if 'repetition_penalty' in params:\n                    payload['repetition_penalty'] = params['repetition_penalty']\n                if 'presence_penalty' in params:\n                    payload['presence_penalty'] = params['presence_penalty']\n                if 'frequency_penalty' in params:\n                    payload['frequency_penalty'] = params['frequency_penalty']\n                if 'stop_words' in params and params['stop_words']:\n                    payload['stop'] = [word.strip() for word in params['stop_words'].split(',')]\n                if 'seed' in params and params['seed'] > 0:\n                    payload['seed'] = params['seed']\n                \n                print(f\"构建的LM Studio API请求payload: {payload}\")\n                \n                # 检查是否需要取消\n                if cancel_token and cancel_token():\n                    raise Exception(\"请求已取消\")\n                \n                # 发送请求\n                response = requests.post(\n                    f\"{lmstudio_host}/v1/chat/completions\",\n                    headers={\"Content-Type\": \"application/json\"},\n                    json=payload\n                )\n                \n                # 处理响应\n                if response.status_code == 200:\n                    response_data = response.json()\n                    if 'choices' in response_data and len(response_data['choices']) > 0:\n                        choice = response_data['choices'][0]\n                        if 'message' in choice and 'content' in choice['message']:\n                            result = choice['message']['content']\n                        else:\n                            result = f\"响应格式错误: {response_data}\"\n                    else:\n                        result = f\"响应格式错误: {response_data}\"\n                else:\n                    result = f\"调用LM Studio失败: {response.status_code} - {response.text}\"\n            except Exception as e:\n                # 调用失败时显示具体错误信息\n                result = f\"调用失败: {str(e)}\"\n                print(f\"调用LM Studio时出错: {str(e)}\")\n        elif model_source == 'api':\n            # 调用外部API\n            try:\n                import requests\n                \n                # 获取API配置\n                model = params.get('model', '')\n                api_key = params.get('api_key', '')\n                \n                if not model:\n                    return \"请输入模型ID\"\n                if not api_key:\n                    return \"请输入API密钥\"\n                \n                # 构建请求数据\n                messages = [\n                    {\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}\n                ]\n                \n                # 添加提示词到messages\n                if prompt:\n                    if isinstance(prompt, str):\n                        messages.append({\"role\": \"system\", \"content\": f\"提示词: {prompt}\"})\n                \n                # 添加上下文到messages\n                if context:\n                    if isinstance(context, str):\n                        messages.append({\"role\": \"system\", \"content\": f\"上下文信息: {context}\"})\n                    elif isinstance(context, list):\n                        for dialogue in context:\n                            if isinstance(dialogue, dict):\n                                if 'user' in dialogue:\n                                    messages.append({\"role\": \"user\", \"content\": dialogue['user']})\n                                if 'ai' in dialogue:\n                                    messages.append({\"role\": \"assistant\", \"content\": dialogue['ai']})\n                \n                # 添加对话历史到messages\n                if dialogue_history:\n                    if isinstance(dialogue_history, list):\n                        for dialogue in dialogue_history:\n                            if isinstance(dialogue, dict):\n                                if 'user' in dialogue:\n                                    messages.append({\"role\": \"user\", \"content\": dialogue['user']})\n                                if 'ai' in dialogue:\n                                    messages.append({\"role\": \"assistant\", \"content\": dialogue['ai']})\n                \n                # 添加用户对话\n                if user_dialogue:\n                    messages.append({\"role\": \"user\", \"content\": user_dialogue})\n                \n                # 构建payload\n                payload = {\n                    \"model\": model,\n                    \"messages\": messages,\n                    \"temperature\": params.get('temperature', 0.7),\n                    \"max_tokens\": params.get('max_tokens', 1000)\n                }\n                \n                # 构建headers\n                headers = {\n                    \"Content-Type\": \"application/json\"\n                }\n                \n                # 根据服务商选择不同的API配置\n                if service_provider == 'OpenAI':\n                    # 使用OpenAI API\n                    headers[\"Authorization\"] = f\"Bearer {api_key}\"\n                    endpoint = 'https://api.openai.com/v1/chat/completions'\n                elif service_provider == '火山引擎':\n                    # 使用火山引擎API\n                    headers[\"Authorization\"] = f\"Bearer {api_key}\"\n                    endpoint = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions'\n                elif service_provider == '阿里云':\n                    # 使用阿里云API\n                    headers[\"Authorization\"] = f\"Bearer {api_key}\"\n                    endpoint = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/gpt3.5/turbo'\n                elif service_provider == '腾讯云':\n                    # 使用腾讯云API\n                    headers[\"Authorization\"] = f\"Bearer {api_key}\"\n                    endpoint = 'https://api.tencentcloudapi.com/v20230901/chat/completions'\n                elif service_provider == 'DeepSeek':\n                    # 使用DeepSeek API\n                    headers[\"Authorization\"] = f\"Bearer {api_key}\"\n                    endpoint = 'https://api.deepseek.com/v1/chat/completions'\n                else:\n                    # 默认使用OpenAI API\n                    headers[\"Authorization\"] = f\"Bearer {api_key}\"\n                    endpoint = 'https://api.openai.com/v1/chat/completions'\n                \n                print(f\"构建API请求，服务商: {service_provider}, 端点: {endpoint}, 模型: {model}\")\n                print(f\"请求数据: {payload}\")\n                \n                # 检查是否需要取消\n                if cancel_token and cancel_token():\n                    raise Exception(\"请求已取消\")\n                \n                # 发送请求\n                response = requests.post(\n                    endpoint,\n                    headers=headers,\n                    json=payload\n                )\n                \n                # 处理响应\n                if response.status_code == 200:\n                    response_data = response.json()\n                    \n                    # 解析响应（默认OpenAI格式）\n                    if 'choices' in response_data and len(response_data['choices']) > 0:\n                        choice = response_data['choices'][0]\n                        if 'message' in choice and 'content' in choice['message']:\n                            result = choice['message']['content']\n                        else:\n                            result = f\"响应格式错误: {response_data}\"\n                    else:\n                        result = f\"响应格式错误: {response_data}\"\n                else:\n                    result = f\"API调用失败: {response.status_code} - {response.text}\"\n            except Exception as e:\n                result = f\"API调用失败: {str(e)}\"\n                print(f\"调用API时出错: {str(e)}\")\n        else:\n            # 未知模型来源\n            result = f\"无法调用\"\n        \n        return result\n    except Exception as e:\n        # 错误处理\n        return f\"调用模型失败: {str(e)}\"\n\n# 主函数\ndef execute(model_params, prompt_params, context_params, dialogue_params, service_params=None, model_id_params=None, api_key_params=None, settings=None, cancel_token=None):\n    \"\"\"\n    执行模块逻辑\n    \n    参数:\n    - model_params: 模型选择（包含模型选择等）\n    - prompt_params: 提示词参数\n    - context_params: 上下文参数（包含对话上下文）\n    - dialogue_params: 对话参数（包含用户提交给大模型的内容）\n    - service_params: 服务商参数（API模式下的服务商选择）\n    - model_id_params: 模型ID参数（API模式下的模型ID）\n    - api_key_params: API密钥参数（API模式下的API密钥）\n    - settings: 额外的设置参数（从前端传递的完整设置）\n    - cancel_token: 取消令牌，用于检测是否需要取消请求\n    \n    返回:\n    - 生成结果（包含更新后的上下文和本次生成结果）\n    \"\"\"\n    # 处理空参数\n    if model_params is None:\n        model_params = {}\n    if prompt_params is None:\n        prompt_params = {}\n    if context_params is None:\n        context_params = {}\n    if dialogue_params is None:\n        dialogue_params = {}\n    if service_params is None:\n        service_params = {}\n    if model_id_params is None:\n        model_id_params = {}\n    if api_key_params is None:\n        api_key_params = {}\n    if settings is None:\n        settings = {}\n    \n    print(f\"执行函数参数: model_params={model_params}, prompt_params={prompt_params}, context_params={context_params}, dialogue_params={dialogue_params}, service_params={service_params}, model_id_params={model_id_params}, api_key_params={api_key_params}, settings={settings}\")\n    \n    # 处理字符串参数\n    if isinstance(model_params, str):\n        model_params = {'model_source': model_params}\n        print(f\"处理字符串模型参数: {model_params}\")\n    if isinstance(prompt_params, str):\n        prompt_params = {'prompt': prompt_params}\n        print(f\"处理字符串提示词参数: {prompt_params}\")\n    if isinstance(context_params, str):\n        context_params = {'context': context_params}\n        print(f\"处理字符串上下文参数: {context_params}\")\n    if isinstance(dialogue_params, str):\n        dialogue_params = {'dialogue': dialogue_params}\n        print(f\"处理字符串对话参数: {dialogue_params}\")\n    if isinstance(service_params, str):\n        service_params = {'service_provider': service_params}\n        print(f\"处理字符串服务商参数: {service_params}\")\n    if isinstance(model_id_params, str):\n        model_id_params = {'model': model_id_params}\n        print(f\"处理字符串模型ID参数: {model_id_params}\")\n    if isinstance(api_key_params, str):\n        api_key_params = {'api_key': api_key_params}\n        print(f\"处理字符串API密钥参数: {api_key_params}\")\n    \n    # 合并参数\n    merged_params = {**model_params, **prompt_params, **context_params, **dialogue_params, **service_params, **model_id_params, **api_key_params, **settings}\n    print(f\"合并后的参数: {merged_params}\")\n    \n    # 处理上下文参数\n    if context_params:\n        # 应用默认值\n        if 'default_model_source' in context_params and not model_params.get('model_source'):\n            merged_params['model_source'] = context_params['default_model_source']\n            print(f\"应用默认模型来源: {context_params['default_model_source']}\")\n        if 'default_prompt' in context_params and not prompt_params.get('prompt'):\n            merged_params['prompt'] = context_params['default_prompt']\n            print(f\"应用默认提示词: {context_params['default_prompt']}\")\n        if 'default_context' in context_params and not context_params.get('context'):\n            merged_params['context'] = context_params['default_context']\n            print(f\"应用默认上下文: {context_params['default_context']}\")\n        if 'default_dialogue' in context_params and not dialogue_params.get('dialogue_history'):\n            merged_params['dialogue_history'] = context_params['default_dialogue']\n            print(f\"应用默认对话: {context_params['default_dialogue']}\")\n        if 'default_service_provider' in context_params and not service_params.get('service_provider'):\n            merged_params['service_provider'] = context_params['default_service_provider']\n            print(f\"应用默认服务商: {context_params['default_service_provider']}\")\n        if 'default_model' in context_params and not model_id_params.get('model'):\n            merged_params['model'] = context_params['default_model']\n            print(f\"应用默认模型ID: {context_params['default_model']}\")\n        if 'default_api_key' in context_params and not api_key_params.get('api_key'):\n            merged_params['api_key'] = context_params['default_api_key']\n            print(f\"应用默认API密钥\")\n        \n        # 处理API密钥\n        if 'api_key' in context_params:\n            merged_params['api_key'] = context_params['api_key']\n            print(f\"应用API密钥\")\n        \n        # 处理LM Studio设置\n        if 'lmstudio_host' in context_params:\n            merged_params['lmstudio_host'] = context_params['lmstudio_host']\n            print(f\"应用LM Studio主机地址: {context_params['lmstudio_host']}\")\n        if 'lmstudio_model' in context_params:\n            merged_params['lmstudio_model'] = context_params['lmstudio_model']\n            print(f\"应用LM Studio模型: {context_params['lmstudio_model']}\")\n    \n    # 直接从settings中获取设置\n    if 'lmstudio_host' in settings:\n        merged_params['lmstudio_host'] = settings['lmstudio_host']\n        print(f\"从settings应用LM Studio主机地址: {settings['lmstudio_host']}\")\n    if 'lmstudio_model' in settings:\n        merged_params['lmstudio_model'] = settings['lmstudio_model']\n        print(f\"从settings应用LM Studio模型: {settings['lmstudio_model']}\")\n    if 'model_source' in settings:\n        merged_params['model_source'] = settings['model_source']\n        print(f\"从settings应用模型来源: {settings['model_source']}\")\n    if 'service_provider' in settings:\n        merged_params['service_provider'] = settings['service_provider']\n        print(f\"从settings应用服务商: {settings['service_provider']}\")\n    if 'model' in settings:\n        merged_params['model'] = settings['model']\n        print(f\"从settings应用模型ID: {settings['model']}\")\n    if 'api_key' in settings:\n        merged_params['api_key'] = settings['api_key']\n        print(f\"从settings应用API密钥\")\n    \n    # 提取上下文\n    context = merged_params.get('context', '')\n    print(f\"提取的上下文: {context}\")\n    \n    # 提取对话内容（用户提交给大模型的内容）\n    user_dialogue = merged_params.get('dialogue_history', '') or merged_params.get('dialogue', '')\n    print(f\"提取的用户对话: {user_dialogue}\")\n    \n    # 调用模型生成结果\n    result = call_model(model_params, merged_params, cancel_token)\n    \n    # 构建更新后的上下文\n    if context:\n        updated_context = f\"{context}\\n用户: {user_dialogue}\\nAI: {result}\"\n    else:\n        updated_context = f\"用户: {user_dialogue}\\nAI: {result}\"\n    \n    # 返回两个值，分别对应两个输出端口\n    # 第一个值：本次的生成结果\n    # 第二个值：添加了此轮对话的上下文\n    return result, updated_context\n\n\"\"\"\n调用模块\n\n功能：\n- 调用AI模型生成结果\n- 支持本地LM Studio和外部API两种模式\n- 支持多种服务商（OpenAI、Anthropic、Google Gemini）\n- 支持设置温度、最大token数等参数\n- 支持上下文管理，保存对话历史\n\n使用场景：\n- 作为对话系统的核心模块\n- 在需要AI生成内容的工作流中使用\n- 作为问答系统的核心组件\n\n输入：\n- 模型选择：模型来源（lmstudio或api）\n- 提示词：给AI的提示词\n- 上下文：对话上下文\n- 对话：用户输入的对话内容\n- 服务商：API模式下的服务商选择\n- 模型ID：API模式下的模型ID\n- API密钥：API模式下的API密钥\n\n输出：\n- 生成结果：AI生成的内容\n- 更新后的上下文：包含本次对话的更新上下文",
+          "excitedbydata": false,
+          "input_quantity": 4,
+          "inputtingwindow_quantity": 0,
+          "kind": "调用模块",
+          "name": "调用模块",
+          "output_name": "生成结果,更新后的上下文",
+          "output_quantity": 2,
+          "setting": true,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 1,
+          "userinput": false,
+          "variable_quantity": 7,
+          "variables_name": "模型选择,提示词,上下文,对话,服务商,模型ID,API密钥"
+        }
+      },
+      "settings": {
+        "api_key": "",
+        "frequency_penalty": 0,
+        "lmstudio_host": "http://localhost:1234",
+        "lmstudio_model": "minicpm-o-4_5",
+        "max_tokens": 1024,
+        "model": "",
+        "model_source": "lmstudio",
+        "presence_penalty": 0,
+        "repetition_penalty": 1.1,
+        "seed": 0,
+        "service_provider": "火山引擎",
+        "stop_words": "",
+        "temperature": 0.7,
+        "top_k": 40,
+        "top_p": 0.9,
+        "上下文": "",
+        "对话": "",
+        "提示词": "",
+        "服务商": "",
+        "模型ID": "",
+        "模型选择": ""
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "63f87b74-2340-463c-b6cb-ce8842384e33",
+      "name": "对话输出",
+      "kind": "输出模块",
+      "left": "550px",
+      "top": "326px",
+      "moduleData": {
+        "name": "对话输出",
+        "params": {
+          "description": "将内容输出到对话面板\"\"\"\n    return None\n\n\"\"\"\n对话输出模块\n\n功能：\n- 将内容输出到对话面板\n- 作为对话系统的输出端\n- 接收内容并显示在界面上\n\n使用场景：\n- 作为对话系统的最后一步，显示AI的回复\n- 在需要显示文本内容的工作流中使用\n- 作为问答系统的输出组件\n\n输入：\n- 内容：需要显示的文本内容\n\n输出：\n- 无输出端口，只将内容显示在对话面板",
+          "excitedbydata": true,
+          "input_quantity": 1,
+          "inputtingwindow_quantity": 0,
+          "kind": "输出模块",
+          "name": "对话输出",
+          "output_name": "",
+          "output_quantity": 0,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 0,
+          "variables_name": "内容"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "2d0ca283-5187-49ad-9bfa-006040ca9c57",
+      "name": "user输入",
+      "kind": "输入模块",
+      "left": "28px",
+      "top": "479px",
+      "moduleData": {
+        "name": "user输入",
+        "params": {
+          "description": "获取用户输入并作为输出\"\"\"\n    # 实际应用中，这里会从用户界面获取输入\n    # 暂时返回一个占位符，由前端处理用户输入\n    # 当系统实现模块执行功能时，这里会返回实际的用户输入\n    return \"user_input_placeholder\"\n\n\"\"\"\n用户输入模块\n\n功能：\n- 获取用户在界面上输入的内容\n- 作为工作流的起点，触发整个工作流的执行\n- 无输入端口，直接从用户界面获取输入\n\n使用场景：\n- 需要用户提供输入的工作流\n- 作为对话系统的起点\n- 作为文生图、图生图等工作流的输入源\n\n输入：\n- 无输入端口，直接从用户界面获取\n\n输出：\n- user_input：用户输入的内容",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "输入模块",
+          "name": "user输入",
+          "output_name": "user_input",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 0,
+          "variables_name": ""
+        }
+      },
+      "settings": {},
+      "inputValue": "你能听到我说话吗"
+    },
+    {
+      "id": "938a5986-c04f-4c8b-922b-4fb06be511e9",
+      "name": "固定值输出模块",
+      "kind": "处理模块",
+      "left": "20px",
+      "top": "244px",
+      "moduleData": {
+        "name": "固定值输出模块",
+        "params": {
+          "description": "执行固定值输出逻辑\n    \n    返回:\n    - 用户设置的固定值\n    \"\"\"\n    global _fixed_value\n    \n    # 返回固定值\n    return _fixed_value\n\n\ndef get_user_input():\n    \"\"\"\n    获取用户输入并作为固定值\n    \n    返回:\n    - 用户输入的固定值\n    \"\"\"\n    global _fixed_value\n    \n    # 实际应用中，这里会从用户界面获取输入\n    # 暂时返回一个占位符，由前端处理用户输入\n    # 当系统实现模块执行功能时，这里会返回实际的用户输入\n    return _fixed_value\n\n\n# 模块入口\nif __name__ == \"__main__\":\n    # 测试固定值输出模块\n    # 设置固定值\n    _fixed_value = \"测试固定值\"\n    result = execute()\n    print(f\"固定值输出模块测试结果: {result}\")\n    \n    # 更改固定值并再次测试\n    _fixed_value = \"新的固定值\"\n    result2 = execute()\n    print(f\"更改固定值后测试结果: {result2}\")\n\n\"\"\"\n固定值输出模块\n\n功能：\n- 输出用户设置的固定值\n- 支持通过设置界面修改固定值\n\n使用场景：\n- 作为工作流中的常量输入\n- 用于提供固定的参数值\n- 作为负面提示词等固定值的来源\n\n输入：\n- 无输入端口，通过设置界面设置固定值\n\n输出：\n- 输出值：用户设置的固定值",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "处理模块",
+          "name": "固定值输出模块",
+          "output_name": "输出值",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 1,
+          "variables_name": "固定值"
+        }
+      },
+      "settings": {},
+      "inputValue": "回答的第一句话应是“用户你好”，后面是正常的回答"
+    },
+    {
+      "id": "8bab67e2-0881-43b5-9d05-a48ba88074b2",
+      "name": "缓存模块",
+      "kind": "处理模块",
+      "left": "314px",
+      "top": "525px",
+      "moduleData": {
+        "name": "缓存模块",
+        "params": {
+          "description": "执行缓存逻辑\n    :param input_data: 输入数据\n    :return: 缓存的数据\n    \"\"\"\n    global _cache\n    \n    # 如果输入数据不是None，则更新缓存（包括空字符串、0、False等）\n    if input_data is not None:\n        _cache = input_data\n    \n    # 返回缓存的数据\n    return _cache\n\n\n# 模块入口\nif __name__ == \"__main__\":\n    # 测试缓存模块\n    test_data = \"测试缓存数据\"\n    result = execute(test_data)\n    print(f\"缓存模块测试结果: {result}\")\n    \n    # 测试无输入时返回缓存数据\n    result2 = execute(None)\n    print(f\"无输入时返回缓存: {result2}\")\n\n\"\"\"\n缓存模块\n\n功能：\n- 缓存输入数据并输出\n- 当输入数据为None时，返回之前缓存的数据\n- 当输入数据不为None时，更新缓存并返回\n\n使用场景：\n- 作为工作流中的数据缓存器\n- 在需要保存中间结果的工作流中使用\n- 用于实现数据的持久化传递\n\n输入：\n- input：需要缓存的输入数据\n\n输出：\n- output：缓存的数据",
+          "excitedbydata": true,
+          "input_quantity": 1,
+          "inputtingwindow_quantity": 0,
+          "kind": "处理模块",
+          "name": "缓存模块",
+          "output_name": "output",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 1,
+          "variables_name": "input"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    }
+  ],
+  "connections": [
+    {
+      "startModuleId": "d44c95ac-a4c2-4f2d-b4a4-f17130690221",
+      "startPortIndex": 0,
+      "endModuleId": "63f87b74-2340-463c-b6cb-ce8842384e33",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "2d0ca283-5187-49ad-9bfa-006040ca9c57",
+      "startPortIndex": 0,
+      "endModuleId": "d44c95ac-a4c2-4f2d-b4a4-f17130690221",
+      "endPortIndex": 3,
+      "isRed": false
+    },
+    {
+      "startModuleId": "938a5986-c04f-4c8b-922b-4fb06be511e9",
+      "startPortIndex": 0,
+      "endModuleId": "d44c95ac-a4c2-4f2d-b4a4-f17130690221",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "d44c95ac-a4c2-4f2d-b4a4-f17130690221",
+      "startPortIndex": 1,
+      "endModuleId": "8bab67e2-0881-43b5-9d05-a48ba88074b2",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "8bab67e2-0881-43b5-9d05-a48ba88074b2",
+      "startPortIndex": 0,
+      "endModuleId": "d44c95ac-a4c2-4f2d-b4a4-f17130690221",
+      "endPortIndex": 2,
+      "isRed": false
+    }
+  ],
+  "canvasSize": {
+    "width": 800,
+    "height": 1200
+  },
+  "timestamp": "2026-03-14T10:52:41.672Z",
+  "usedCustomModules": []
+}

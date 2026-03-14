@@ -1,0 +1,361 @@
+{
+  "version": "1.0",
+  "modules": [
+    {
+      "id": "9fa92e93-c425-4148-8557-13ef6a7b8c1c",
+      "name": "user输入",
+      "kind": "输入模块",
+      "left": "362px",
+      "top": "585px",
+      "moduleData": {
+        "name": "user输入",
+        "params": {
+          "description": "获取用户输入并作为输出\"\"\"\n    # 实际应用中，这里会从用户界面获取输入\n    # 暂时返回一个占位符，由前端处理用户输入\n    # 当系统实现模块执行功能时，这里会返回实际的用户输入\n    return \"user_input_placeholder\"\n\n\"\"\"\n用户输入模块\n\n功能：\n- 获取用户在界面上输入的内容\n- 作为工作流的起点，触发整个工作流的执行\n- 无输入端口，直接从用户界面获取输入\n\n使用场景：\n- 需要用户提供输入的工作流\n- 作为对话系统的起点\n- 作为文生图、图生图等工作流的输入源\n\n输入：\n- 无输入端口，直接从用户界面获取\n\n输出：\n- user_input：用户输入的内容",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "输入模块",
+          "name": "user输入",
+          "output_name": "user_input",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 0,
+          "variables_name": ""
+        }
+      },
+      "settings": {},
+      "inputValue": "a young boy standing in a beautiful garden, surrounded by colorful flowers and green plants, soft natural sunlight, warm lighting, gentle breeze, peaceful atmosphere, realistic, detailed skin, sharp focus, 8k, high detail, masterpiece, best quality"
+    },
+    {
+      "id": "c5609ef3-4b9d-4e41-9e9e-9e93c30b473c",
+      "name": "Checkpoint加载器",
+      "kind": "加载器",
+      "left": "418px",
+      "top": "376px",
+      "moduleData": {
+        "name": "Checkpoint加载器",
+        "params": {
+          "description": "执行模块逻辑\n    :return: (model_path, vae_path, clip_path) - 三个都是字符串路径\n    \"\"\"\n    default_model_path = os.path.join(os.getcwd(), \"models\")\n    settings_file = os.path.join(os.getcwd(), \"gui_settings.json\")\n    if os.path.exists(settings_file):\n        try:\n            with open(settings_file, 'r', encoding='utf-8') as f:\n                import json\n                gui_settings = json.load(f)\n                if \"模型文件夹路径\" in gui_settings:\n                    default_model_path = gui_settings[\"模型文件夹路径\"]\n        except Exception as e:\n            print(f\"加载GUI设置失败: {e}\")\n    \n    if model_folder is None or not model_folder:\n        model_folder = default_model_path\n    if selected_model is None:\n        selected_model = \"\"\n    \n    model_path = selected_model if selected_model else \"\"\n    \n    print(f\"Checkpoint加载器: 文件夹={model_folder}, 模型={model_path}\")\n    \n    try:\n        if not model_path:\n            model_files = scan_model_files(model_folder)\n            if model_files:\n                model_path = model_files[0]\n                print(f\"自动选择模型: {model_path}\")\n        \n        print(f\"Checkpoint加载器完成: 只传路径={model_path}\")\n        \n        model_path = os.path.normpath(model_path)\n        \n        return model_path, model_path, model_path\n    except Exception as e:\n        print(f\"Checkpoint加载失败: {str(e)}\")\n        return f\"加载失败: {str(e)}\", None, None\n\nif __name__ == \"__main__\":\n    print(\"测试Checkpoint加载器:\")\n    result = execute()\n    print(f\"结果: {result}\")\n\n\"\"\"\nCheckpoint加载器模块\n\n功能：\n- 纯指路牌，只传模型文件路径，不加载不运算\n- 自动扫描指定文件夹中的模型文件\n- 从GUI设置中读取默认模型路径\n\n使用场景：\n- 作为Stable Diffusion工作流的起点，提供模型路径\n- 在需要模型路径的工作流中使用\n\n输入：\n- 模型文件夹路径：模型所在的文件夹\n- 模型文件选择：具体的模型文件路径\n\n输出：\n- model：选中的模型文件路径字符串\n- vae：VAE模型文件路径字符串\n- clip：CLIP模型文件路径字符串",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "kind": "加载器",
+          "name": "Checkpoint加载器",
+          "output_name": "model,vae,clip",
+          "output_quantity": 3,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "模型文件夹路径,模型文件选择"
+        }
+      },
+      "settings": {
+        "模型文件夹路径": "F:/2026寒假项目_简单图形化ai调用工具/models",
+        "模型文件选择": "F:/2026寒假项目_简单图形化ai调用工具/models\\checkpoints\\anything-v5-PrtRE.safetensors"
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "63b8faa6-b75c-4afa-8512-6cf806d99c8f",
+      "name": "空Latent张量生成模块",
+      "kind": "处理模块",
+      "left": "855px",
+      "top": "824px",
+      "moduleData": {
+        "name": "空Latent张量生成模块",
+        "params": {
+          "description": "从gui_settings.json读取生成引擎设置，返回对应的PyTorch设备\n    返回: (device_str, use_half_precision)\n    \"\"\"\n    import os\n    import json\n    \n    settings_file = os.path.join(os.getcwd(), \"gui_settings.json\")\n    default_engine = \"CPU\"\n    \n    if os.path.exists(settings_file):\n        try:\n            with open(settings_file, 'r', encoding='utf-8') as f:\n                settings = json.load(f)\n                engine = settings.get(\"生成引擎\", default_engine)\n        except Exception as e:\n            print(f\"读取生成引擎设置失败: {e}\")\n            engine = default_engine\n    else:\n        engine = default_engine\n    \n    print(f\"读取到的生成引擎设置: {engine}\")\n    \n    # 解析引擎设置\n    if engine == \"CPU\":\n        return \"cpu\", False\n    \n    # 检查是否有CUDA可用\n    has_cuda = torch.cuda.is_available()\n    \n    # 尝试提取GPU索引\n    import re\n    gpu_idx = 0\n    match = re.search(r'GPU\\s+(\\d+)', engine)\n    if match:\n        gpu_idx = int(match.group(1))\n    \n    # 处理不同类型的引擎\n    if \"CUDA\" in engine:\n        if has_cuda:\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了CUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"TensorRT\" in engine:\n        if has_cuda:\n            print(\"注意: TensorRT引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了TensorRT引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"DML\" in engine:\n        # DML (DirectML) - 检查是否有torch_directml可用\n        try:\n            import torch_directml\n            has_dml = True\n        except ImportError:\n            has_dml = False\n        \n        if has_dml:\n            print(f\"使用DML后端，GPU索引: {gpu_idx}\")\n            return f\"privateuseone:{gpu_idx}\", False\n        elif has_cuda:\n            print(\"警告: DML不可用，回退到CUDA\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了DML引擎但DML和CUDA都不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"ZLUDA\" in engine:\n        if has_cuda:\n            print(\"注意: ZLUDA引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了ZLUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    \n    # 默认回退\n    return \"cpu\", False\n\ndef execute(width=None, height=None, batch_size=None, seed=None):\n    \"\"\"\n    执行模块逻辑\n    :param width: 宽度\n    :param height: 高度\n    :param batch_size: 批量大小\n    :param seed: 随机种子 (-1表示随机)\n    :return: Latent噪声张量\n    \"\"\"\n    if width is None or width == '':\n        width = 512\n    if height is None or height == '':\n        height = 512\n    if batch_size is None or batch_size == '':\n        batch_size = 1\n    if seed is None or seed == '':\n        seed = -1\n    width = int(width)\n    height = int(height)\n    batch_size = int(batch_size)\n    seed = int(seed)\n    \n    print(f\"空Latent张量参数: 宽度={width}, 高度={height}, 批量大小={batch_size}, 种子={seed}\")\n    \n    try:\n        if width <= 0 or height <= 0 or batch_size <= 0:\n            raise ValueError(\"宽度、高度和批量大小必须为正数\")\n        \n        # 从设置中获取设备\n        device, use_half = get_device_from_engine_setting()\n        print(f\"使用设备: {device}\")\n        \n        latent_width = width // 8\n        latent_height = height // 8\n        \n        if device.startswith(\"cuda\") or device.startswith(\"privateuseone\"):\n            dtype = torch.float16\n        else:\n            dtype = torch.float32\n        \n        # 种子为-1时随机生成，不为-1时使用固定种子\n        if seed != -1:\n            # 注意：privateuseone设备可能不支持Generator，回退到CPU\n            try:\n                generator = torch.Generator(device=device).manual_seed(seed)\n                latents = torch.randn(\n                    (batch_size, 4, latent_height, latent_width),\n                    device=device,\n                    dtype=dtype,\n                    generator=generator\n                )\n            except:\n                generator = torch.Generator(device=\"cpu\").manual_seed(seed)\n                latents = torch.randn(\n                    (batch_size, 4, latent_height, latent_width),\n                    device=\"cpu\",\n                    dtype=dtype,\n                    generator=generator\n                ).to(device=device)\n        else:\n            # 种子为-1，完全随机\n            latents = torch.randn(\n                (batch_size, 4, latent_height, latent_width),\n                device=device,\n                dtype=dtype\n            )\n        \n        print(f\"空Latent张量生成完成: 形状={latents.shape}, 设备={device}\")\n        \n        return {\"samples\": latents}\n    except Exception as e:\n        print(f\"空Latent张量生成失败: {str(e)}\")\n        import traceback\n        traceback.print_exc()\n        return None\n\nif __name__ == \"__main__\":\n    print(\"测试空Latent张量生成:\")\n    result = execute(512, 512, 4)\n    if result is not None:\n        print(f\"生成结果形状: {result.shape}\")\n    else:\n        print(\"生成失败\")\n\n\"\"\"\n空Latent张量生成模块\n\n功能：\n- 按指定尺寸生成噪声Latent张量\n- 支持设置宽度、高度、批量大小和种子\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n\n使用场景：\n- 作为文生图工作流的起点，生成初始噪声Latent\n- 在需要噪声Latent的工作流中使用\n\n输入：\n- 宽度：生成图像的宽度\n- 高度：生成图像的高度\n- 批量大小：生成的批量大小\n- 种子：随机种子\n\n输出：\n- 空Latent张量：生成的噪声Latent张量",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "kind": "处理模块",
+          "name": "空Latent张量生成模块",
+          "output_name": "空Latent张量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 4,
+          "variables_name": "宽度,高度,批量大小,种子"
+        }
+      },
+      "settings": {
+        "宽度": "512",
+        "高度": "512",
+        "批量大小": "1",
+        "种子": "-1"
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "b3d87ed3-435d-4159-8a9f-41ca6565c13e",
+      "name": "K采样器模块",
+      "kind": "采样",
+      "left": "957px",
+      "top": "526px",
+      "moduleData": {
+        "name": "K采样器模块",
+        "params": {
+          "description": "清理缓存释放显存\"\"\"\n    global _model_cache, _scheduler_cache\n    for key in list(_model_cache.keys()):\n        del _model_cache[key]\n    _model_cache.clear()\n    _scheduler_cache.clear()\n    gc.collect()\n    if torch.cuda.is_available():\n        torch.cuda.empty_cache()\n\ndef get_scheduler(sampler_name, steps, device):\n    \"\"\"\n    根据采样器名称创建对应的调度器\n    \"\"\"\n    sampler_name = sampler_name or \"euler\"\n    sampler_name = sampler_name.lower()\n    \n    print(f\"创建调度器: {sampler_name}\")\n    \n    if \"euler\" in sampler_name:\n        return EulerDiscreteScheduler(\n            num_train_timesteps=1000,\n            beta_start=0.00085,\n            beta_end=0.012,\n            beta_schedule=\"scaled_linear\",\n            steps_offset=1\n        )\n    elif \"ddim\" in sampler_name:\n        return DDIMScheduler(\n            num_train_timesteps=1000,\n            beta_start=0.00085,\n            beta_end=0.012,\n            beta_schedule=\"scaled_linear\",\n            clip_sample=False,\n            set_alpha_to_one=False,\n            steps_offset=1,\n            prediction_type=\"epsilon\"\n        )\n    elif \"dpm\" in sampler_name or \"sde\" in sampler_name:\n        # 支持dpmpp_2m_sde和其他DPM变体\n        return DPMSolverMultistepScheduler(\n            num_train_timesteps=1000,\n            beta_start=0.00085,\n            beta_end=0.012,\n            beta_schedule=\"scaled_linear\",\n            steps_offset=1,\n            prediction_type=\"epsilon\",\n            solver_type=\"midpoint\"\n        )\n    else:\n        # 默认使用Euler调度器\n        return EulerDiscreteScheduler(\n            num_train_timesteps=1000,\n            beta_start=0.00085,\n            beta_end=0.012,\n            beta_schedule=\"scaled_linear\",\n            steps_offset=1\n        )\n\ndef execute(model_path=None, positive_embeds=None, negative_embeds=None, latents=None, \n             seed=None, post_control=None, steps=None, cfg=None, sampler_name=None, \n             scheduler_name=None, denoise=None):\n    \"\"\"\n    使用diffusers官方标准流程的K采样器实现\n    增强Inpaint逻辑，确保提示词引导生效，mask区域精准生成\n    \"\"\"\n    # ====================== 1. 基础参数 ======================\n    seed = int(seed) if seed is not None else 42\n    steps = max(1, int(steps)) if steps is not None else 20\n    # 修改1：提升CFG默认值（从8→12），增强提示词引导力\n    cfg_scale = float(cfg) if cfg is not None else 12.0\n    denoise = max(0.0, min(1.0, float(denoise))) if denoise is not None else 0.6\n    \n    # 从字典中提取samples张量\n    original_latents = latents\n    if isinstance(latents, dict) and \"samples\" in latents:\n        latents = latents[\"samples\"]\n    \n    # 必要校验\n    if None in [model_path, positive_embeds, negative_embeds, latents]:\n        print(\"错误：缺少核心输入参数\")\n        if isinstance(original_latents, dict):\n            return original_latents\n        return {\"samples\": latents, \"noise_mask\": None}\n    \n    # 第一步：采样最开始的时候\n    original_samples = latents.clone()  # 原始latent，全程不动\n    noise_mask = None\n    if isinstance(original_latents, dict) and \"noise_mask\" in original_latents:\n        noise_mask = original_latents[\"noise_mask\"]\n        # 修复：正确的mask形状校验（只对比空间维度）\n        if noise_mask is not None and noise_mask.shape[2:] != original_samples.shape[2:]:\n            print(f\"mask空间形状 {noise_mask.shape[2:]} 与latent空间形状 {original_samples.shape[2:]} 不一致，忽略mask\")\n            noise_mask = None\n        else:\n            print(f\"使用noise_mask，形状: {noise_mask.shape if noise_mask is not None else 'None'}\")\n    \n    print(f\"=== K采样器（Inpaint增强版）参数 ===\")\n    print(f\"种子={seed}, 步数={steps}, CFG={cfg_scale}, 降噪={denoise}\")\n    print(f\"采样器: {sampler_name or 'euler'}\")\n    print(f\"初始Latent形状: {latents.shape}, 设备: {latents.device}\")\n    \n    # 降噪为0时直接返回原图\n    if denoise == 0:\n        print(\"降噪值为0，直接返回原始Latent\")\n        if isinstance(original_latents, dict):\n            return original_latents\n        return {\"samples\": latents}\n    \n    # ====================== 2. 设备和数据类型 ======================\n    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n    dtype = torch.float16 if device == \"cuda\" else torch.float32\n    print(f\"使用设备: {device}, 数据类型: {dtype}\")\n    \n    # 所有张量移到对应设备\n    latents = latents.to(device=device, dtype=dtype)\n    positive_embeds = positive_embeds.to(device=device, dtype=dtype)\n    negative_embeds = negative_embeds.to(device=device, dtype=dtype)\n    text_embeddings = torch.cat([negative_embeds, positive_embeds])\n    \n    # 处理mask：对齐设备、精度+扩展4通道+边缘模糊（关键修改）\n    if noise_mask is not None:\n        noise_mask = noise_mask.to(device=device, dtype=dtype)\n        # 修改2：mask边缘高斯模糊，增强模型对mask区域的关注度\n        blur = transforms.GaussianBlur(kernel_size=5, sigma=2)  # 5核模糊，sigma=2（可调整）\n        noise_mask_single = noise_mask[:, 0:1, :, :]  # 先转回单通道\n        noise_mask_blurred = blur(noise_mask_single)\n        noise_mask = noise_mask_blurred.repeat(1, 4, 1, 1)  # 扩展回4通道\n        noise_mask = torch.clamp(noise_mask, 0.0, 1.0)  # 限制0~1范围\n        print(f\"mask模糊+扩展后形状: {noise_mask.shape}\")\n    \n    # ====================== 3. 加载UNet和调度器 ======================\n    try:\n        # 加载UNet\n        if model_path not in _model_cache:\n            print(\"加载UNet模型...\")\n            pipe = StableDiffusionPipeline.from_single_file(\n                model_path,\n                torch_dtype=dtype,\n                use_safetensors=True,\n                safety_checker=None,\n                requires_safety_checker=False,\n                local_files_only=True\n            )\n            _model_cache[model_path] = pipe.unet.to(device).eval()\n            del pipe\n            gc.collect()\n            if torch.cuda.is_available():\n                torch.cuda.empty_cache()\n        \n        unet = _model_cache[model_path]\n        \n        # 加载或创建调度器\n        scheduler_key = f\"{sampler_name or 'euler'}_{steps}\"\n        if scheduler_key not in _scheduler_cache:\n            print(\"初始化调度器...\")\n            scheduler = get_scheduler(sampler_name, steps, device)\n            _scheduler_cache[scheduler_key] = scheduler\n        \n        scheduler = _scheduler_cache[scheduler_key]\n        \n    except Exception as e:\n        print(f\"模型或调度器加载失败: {e}\")\n        traceback.print_exc()\n        clean_model_cache()\n        if isinstance(original_latents, dict):\n            return original_latents\n        return {\"samples\": latents, \"noise_mask\": None}\n    \n    # ====================== 4. 标准采样流程（核心增强） ======================\n    try:\n        # 设置随机种子\n        torch.manual_seed(seed)\n        if device == \"cuda\":\n            torch.cuda.manual_seed_all(seed)\n        \n        # 设置调度器时间步\n        scheduler.set_timesteps(steps, device=device)\n        timesteps = scheduler.timesteps\n        num_inference_steps = steps\n        strength = denoise\n        \n        # 计算实际时间步\n        start_step = max(0, num_inference_steps - int(num_inference_steps * strength))\n        timesteps = timesteps[start_step:]\n        actual_timesteps = timesteps\n        \n        print(f\"实际时间步数量: {len(actual_timesteps)}\")\n        \n        # 图生图：添加噪声 + 关键修改3（仅mask区域保留噪声）\n        if strength < 1.0:\n            print(\"\\n图生图：添加噪声（仅mask区域）...\")\n            start_timestep = actual_timesteps[0]\n            noise = torch.randn_like(latents, device=device, dtype=dtype)\n            \n            # 标准化start_timestep\n            if isinstance(start_timestep, torch.Tensor):\n                start_timestep = start_timestep.unsqueeze(0) if start_timestep.dim() == 0 else start_timestep\n            else:\n                start_timestep = torch.tensor([start_timestep], device=device, dtype=torch.long)\n            \n            # 全图加噪后，仅mask区域保留噪声，非mask区域还原原始latent\n            latents = scheduler.add_noise(latents, noise, start_timestep)\n            if noise_mask is not None:\n                latents = noise_mask * latents + (1 - noise_mask) * original_samples.to(device, dtype)\n            \n            print(f\"加噪完成，仅mask区域保留噪声\")\n        \n        # 标准采样循环\n        print(\"\\n开始采样循环...\")\n        with torch.no_grad():\n            for i, t in enumerate(actual_timesteps):\n                if i % 5 == 0:\n                    print(f\"采样进度: {i+1}/{len(actual_timesteps)}\")\n                \n                # 进模型前混合mask（核心逻辑）\n                current_latents = latents\n                if noise_mask is not None:\n                    current_latents = noise_mask * latents + (1 - noise_mask) * original_samples.to(device, dtype)\n                \n                # CFG逻辑\n                latent_model_input = torch.cat([current_latents] * 2)\n                latent_model_input = scheduler.scale_model_input(latent_model_input, t)\n                \n                # UNet推理\n                try:\n                    if device == \"cuda\":\n                        with torch.amp.autocast(device_type=\"cuda\", dtype=dtype):\n                            noise_pred = unet(\n                                latent_model_input,\n                                t,\n                                encoder_hidden_states=text_embeddings\n                            ).sample\n                    else:\n                        noise_pred = unet(\n                            latent_model_input,\n                            t,\n                            encoder_hidden_states=text_embeddings\n                        ).sample\n                    \n                    # CFG计算（增强版）\n                    noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)\n                    noise_pred = noise_pred_uncond + cfg_scale * (noise_pred_text - noise_pred_uncond)\n                    \n                    # 更新latent：使用混合后的current_latents而不是原始latents\n                    # 这样模型的预测和更新才会基于相同的输入，确保提示词生效\n                    new_latents = scheduler.step(noise_pred, t, current_latents).prev_sample\n                    \n                    # 模型输出后混合mask（核心逻辑）\n                    if noise_mask is not None:\n                        latents = noise_mask * new_latents + (1 - noise_mask) * original_samples.to(device, dtype)\n                    else:\n                        latents = new_latents\n                    \n                except Exception as e:\n                    print(f\"UNet推理失败: {e}\")\n                    continue\n        \n        print(f\"\\n采样完成！输出Latent设备: {latents.device}\")\n        \n        # 构建结果字典\n        result = {\"samples\": latents}\n        if isinstance(original_latents, dict):\n            for key, value in original_latents.items():\n                if key != \"samples\":\n                    result[key] = value\n        \n        return result\n    \n    except Exception as e:\n        print(f\"采样异常: {e}\")\n        traceback.print_exc()\n        if isinstance(original_latents, dict):\n            return original_latents\n        return {\"samples\": latents}\n\n\"\"\"\nK采样器模块（Inpaint增强版）\n\n功能：\n- 执行Stable Diffusion的采样过程\n- 支持文生图、图生图和遮罩重绘\n- 增强的Inpaint功能，确保mask区域精准生成\n- 支持多种采样器（Euler、DDIM、DPM）\n- 支持模型和调度器缓存，提高性能\n\n使用场景：\n- 作为Stable Diffusion工作流的核心采样步骤\n- 用于生成新图像或修改现有图像\n\n输入：\n- 模型：模型文件路径\n- 正面条件：正面提示词的编码向量\n- 负面条件：负面提示词的编码向量\n- Latent图像：潜在空间的图像张量\n- 种子：随机种子\n- 生成后控制：生成后控制参数\n- 步数：采样步数\n- cfg：CFG缩放因子\n- 采样器名称：采样器类型\n- 调度器：调度器类型\n- 降噪：降噪强度\n\n输出：\n- 生成的Latent张量：采样后的潜在空间图像",
+          "excitedbydata": true,
+          "input_quantity": 4,
+          "kind": "采样",
+          "name": "K采样器模块",
+          "output_name": "生成的Latent张量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 11,
+          "variables_name": "模型,正面条件,负面条件,Latent图像,种子,生成后控制,步数,cfg,采样器名称,调度器,降噪"
+        }
+      },
+      "settings": {
+        "Latent图像": "",
+        "cfg": "8.0",
+        "模型": "",
+        "正面条件": "",
+        "步数": "20",
+        "生成后控制": "randomize",
+        "种子": "123456",
+        "调度器": "simple",
+        "负面条件": "",
+        "采样器名称": "dpmpp_2m",
+        "降噪": "1.0"
+      },
+      "inputValue": ""
+    },
+    {
+      "id": "6b21e7df-dae2-4bec-92d2-f1cb6a566de5",
+      "name": "固定值输出模块",
+      "kind": "处理模块",
+      "left": "348px",
+      "top": "855px",
+      "moduleData": {
+        "name": "固定值输出模块",
+        "params": {
+          "description": "执行固定值输出逻辑\n    \n    返回:\n    - 用户设置的固定值\n    \"\"\"\n    global _fixed_value\n    \n    # 返回固定值\n    return _fixed_value\n\n\ndef get_user_input():\n    \"\"\"\n    获取用户输入并作为固定值\n    \n    返回:\n    - 用户输入的固定值\n    \"\"\"\n    global _fixed_value\n    \n    # 实际应用中，这里会从用户界面获取输入\n    # 暂时返回一个占位符，由前端处理用户输入\n    # 当系统实现模块执行功能时，这里会返回实际的用户输入\n    return _fixed_value\n\n\n# 模块入口\nif __name__ == \"__main__\":\n    # 测试固定值输出模块\n    # 设置固定值\n    _fixed_value = \"测试固定值\"\n    result = execute()\n    print(f\"固定值输出模块测试结果: {result}\")\n    \n    # 更改固定值并再次测试\n    _fixed_value = \"新的固定值\"\n    result2 = execute()\n    print(f\"更改固定值后测试结果: {result2}\")\n\n\"\"\"\n固定值输出模块\n\n功能：\n- 输出用户设置的固定值\n- 支持通过设置界面修改固定值\n\n使用场景：\n- 作为工作流中的常量输入\n- 用于提供固定的参数值\n- 作为负面提示词等固定值的来源\n\n输入：\n- 无输入端口，通过设置界面设置固定值\n\n输出：\n- 输出值：用户设置的固定值",
+          "excitedbydata": true,
+          "input_quantity": 0,
+          "inputtingwindow_quantity": 1,
+          "kind": "处理模块",
+          "name": "固定值输出模块",
+          "output_name": "输出值",
+          "output_quantity": 1,
+          "setting": false,
+          "showingwindow_quantity": 0,
+          "source": "default",
+          "time_late": 0,
+          "userinput": true,
+          "variable_quantity": 1,
+          "variables_name": "固定值"
+        }
+      },
+      "settings": {},
+      "inputValue": "ugly, deformed, blurry, low resolution, low quality, jpeg artifacts, pixelated, out of frame, cropped, bad anatomy, bad hands, missing fingers, extra limbs, mutated hands, poorly drawn face, poorly drawn hands, watermark, text, signature, username, error, disfigured, ugly, gross, disgusting, ugly face, deformed fingers, long neck, cross-eyed, closed eyes, weird eyes, bad lighting, dull colors, overexposed, underexposed, cartoon, anime, 3d render, cgi, painting, illustration, sketch, ugly background, messy background, boring background, duplicate, morbid, mutilated"
+    },
+    {
+      "id": "86be5135-980b-426c-bd7c-4e3e079d6e94",
+      "name": "CLIP文本编码模块",
+      "kind": "模型条件",
+      "left": "674px",
+      "top": "546px",
+      "moduleData": {
+        "name": "CLIP文本编码模块",
+        "params": {
+          "description": "从gui_settings.json读取生成引擎设置，返回对应的PyTorch设备\n    返回: (device_str, use_half_precision)\n    \"\"\"\n    import os\n    import json\n    import torch\n    \n    settings_file = os.path.join(os.getcwd(), \"gui_settings.json\")\n    default_engine = \"CPU\"\n    \n    if os.path.exists(settings_file):\n        try:\n            with open(settings_file, 'r', encoding='utf-8') as f:\n                settings = json.load(f)\n                engine = settings.get(\"生成引擎\", default_engine)\n        except Exception as e:\n            print(f\"读取生成引擎设置失败: {e}\")\n            engine = default_engine\n    else:\n        engine = default_engine\n    \n    print(f\"读取到的生成引擎设置: {engine}\")\n    \n    # 解析引擎设置\n    if engine == \"CPU\":\n        return \"cpu\", False\n    \n    # 检查是否有CUDA可用\n    has_cuda = torch.cuda.is_available()\n    \n    # 尝试提取GPU索引\n    import re\n    gpu_idx = 0\n    match = re.search(r'GPU\\s+(\\d+)', engine)\n    if match:\n        gpu_idx = int(match.group(1))\n    \n    # 处理不同类型的引擎\n    if \"CUDA\" in engine:\n        if has_cuda:\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了CUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"TensorRT\" in engine:\n        if has_cuda:\n            print(\"注意: TensorRT引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了TensorRT引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"DML\" in engine:\n        # DML (DirectML) - 检查是否有torch_directml可用\n        try:\n            import torch_directml\n            has_dml = True\n        except ImportError:\n            has_dml = False\n        \n        if has_dml:\n            print(f\"使用DML后端，GPU索引: {gpu_idx}\")\n            return f\"privateuseone:{gpu_idx}\", False\n        elif has_cuda:\n            print(\"警告: DML不可用，回退到CUDA\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了DML引擎但DML和CUDA都不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"ZLUDA\" in engine:\n        if has_cuda:\n            print(\"注意: ZLUDA引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了ZLUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    \n    # 默认回退\n    return \"cpu\", False\n\ndef execute(clip_model_path=None, prompt=None):\n    \"\"\"\n    执行模块逻辑\n    :param clip_model_path: CLIP模型路径（来自Checkpoint加载器的输出）\n    :param prompt: 提示词\n    :return: 文本向量\n    \"\"\"\n    global _model_cache\n    \n    default_prompt = \"a beautiful cat\"\n    \n    if prompt is None:\n        prompt = default_prompt\n    \n    print(f\"CLIP文本编码参数: 模型路径='{clip_model_path}', 提示词='{prompt}'\")\n    \n    try:\n        if not clip_model_path:\n            print(\"错误: 未提供模型路径\")\n            return None\n        \n        # 从设置中获取设备\n        device, use_half = get_device_from_engine_setting()\n        print(f\"使用设备: {device}\")\n        \n        pipe = None\n        if clip_model_path in _model_cache:\n            print(\"使用缓存的模型\")\n            pipe = _model_cache[clip_model_path]\n        \n        if pipe is None:\n            print(\"开始加载模型...\")\n            # 根据设备选择精度\n            if device.startswith(\"cuda\") or device.startswith(\"privateuseone\"):\n                torch_dtype = torch.float16\n            else:\n                torch_dtype = torch.float32\n            pipe = StableDiffusionPipeline.from_single_file(\n                clip_model_path,\n                torch_dtype=torch_dtype,\n                use_safetensors=True\n            )\n            pipe = pipe.to(device)\n            _model_cache[clip_model_path] = pipe\n            print(\"模型加载完成\")\n        \n        print(\"开始编码提示词...\")\n        positive_embeds, negative_embeds = pipe.encode_prompt(\n            prompt=prompt,\n            device=device,\n            num_images_per_prompt=1,\n            do_classifier_free_guidance=True\n        )\n        \n        print(f\"CLIP文本编码完成: 形状={positive_embeds.shape}\")\n        \n        return positive_embeds\n    except Exception as e:\n        print(f\"CLIP文本编码失败: {str(e)}\")\n        import traceback\n        traceback.print_exc()\n        return f\"CLIP编码错误: {str(e)}\"\n\nif __name__ == \"__main__\":\n    print(\"测试CLIP文本编码模块:\")\n    result = execute(None, \"a beautiful cat\")\n    print(f\"编码结果: {result}\")\n\n\"\"\"\nCLIP文本编码模块\n\n功能：\n- 加载CLIP模型权重\n- 编码提示词为文本向量\n- 支持模型缓存，避免重复加载\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n\n使用场景：\n- 作为Stable Diffusion工作流的提示词编码步骤\n- 在需要文本特征提取的工作流中使用\n\n输入：\n- CLIP模型：CLIP模型文件路径\n- 提示词：需要编码的文本提示词\n\n输出：\n- 文本向量：编码后的文本特征向量",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "模型条件",
+          "name": "CLIP文本编码模块",
+          "output_name": "文本向量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "CLIP模型,提示词"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "28613521-29d9-4827-baee-1f62221e8161",
+      "name": "CLIP文本编码模块",
+      "kind": "模型条件",
+      "left": "654px",
+      "top": "677px",
+      "moduleData": {
+        "name": "CLIP文本编码模块",
+        "params": {
+          "description": "从gui_settings.json读取生成引擎设置，返回对应的PyTorch设备\n    返回: (device_str, use_half_precision)\n    \"\"\"\n    import os\n    import json\n    import torch\n    \n    settings_file = os.path.join(os.getcwd(), \"gui_settings.json\")\n    default_engine = \"CPU\"\n    \n    if os.path.exists(settings_file):\n        try:\n            with open(settings_file, 'r', encoding='utf-8') as f:\n                settings = json.load(f)\n                engine = settings.get(\"生成引擎\", default_engine)\n        except Exception as e:\n            print(f\"读取生成引擎设置失败: {e}\")\n            engine = default_engine\n    else:\n        engine = default_engine\n    \n    print(f\"读取到的生成引擎设置: {engine}\")\n    \n    # 解析引擎设置\n    if engine == \"CPU\":\n        return \"cpu\", False\n    \n    # 检查是否有CUDA可用\n    has_cuda = torch.cuda.is_available()\n    \n    # 尝试提取GPU索引\n    import re\n    gpu_idx = 0\n    match = re.search(r'GPU\\s+(\\d+)', engine)\n    if match:\n        gpu_idx = int(match.group(1))\n    \n    # 处理不同类型的引擎\n    if \"CUDA\" in engine:\n        if has_cuda:\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了CUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"TensorRT\" in engine:\n        if has_cuda:\n            print(\"注意: TensorRT引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了TensorRT引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"DML\" in engine:\n        # DML (DirectML) - 检查是否有torch_directml可用\n        try:\n            import torch_directml\n            has_dml = True\n        except ImportError:\n            has_dml = False\n        \n        if has_dml:\n            print(f\"使用DML后端，GPU索引: {gpu_idx}\")\n            return f\"privateuseone:{gpu_idx}\", False\n        elif has_cuda:\n            print(\"警告: DML不可用，回退到CUDA\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了DML引擎但DML和CUDA都不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"ZLUDA\" in engine:\n        if has_cuda:\n            print(\"注意: ZLUDA引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了ZLUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    \n    # 默认回退\n    return \"cpu\", False\n\ndef execute(clip_model_path=None, prompt=None):\n    \"\"\"\n    执行模块逻辑\n    :param clip_model_path: CLIP模型路径（来自Checkpoint加载器的输出）\n    :param prompt: 提示词\n    :return: 文本向量\n    \"\"\"\n    global _model_cache\n    \n    default_prompt = \"a beautiful cat\"\n    \n    if prompt is None:\n        prompt = default_prompt\n    \n    print(f\"CLIP文本编码参数: 模型路径='{clip_model_path}', 提示词='{prompt}'\")\n    \n    try:\n        if not clip_model_path:\n            print(\"错误: 未提供模型路径\")\n            return None\n        \n        # 从设置中获取设备\n        device, use_half = get_device_from_engine_setting()\n        print(f\"使用设备: {device}\")\n        \n        pipe = None\n        if clip_model_path in _model_cache:\n            print(\"使用缓存的模型\")\n            pipe = _model_cache[clip_model_path]\n        \n        if pipe is None:\n            print(\"开始加载模型...\")\n            # 根据设备选择精度\n            if device.startswith(\"cuda\") or device.startswith(\"privateuseone\"):\n                torch_dtype = torch.float16\n            else:\n                torch_dtype = torch.float32\n            pipe = StableDiffusionPipeline.from_single_file(\n                clip_model_path,\n                torch_dtype=torch_dtype,\n                use_safetensors=True\n            )\n            pipe = pipe.to(device)\n            _model_cache[clip_model_path] = pipe\n            print(\"模型加载完成\")\n        \n        print(\"开始编码提示词...\")\n        positive_embeds, negative_embeds = pipe.encode_prompt(\n            prompt=prompt,\n            device=device,\n            num_images_per_prompt=1,\n            do_classifier_free_guidance=True\n        )\n        \n        print(f\"CLIP文本编码完成: 形状={positive_embeds.shape}\")\n        \n        return positive_embeds\n    except Exception as e:\n        print(f\"CLIP文本编码失败: {str(e)}\")\n        import traceback\n        traceback.print_exc()\n        return f\"CLIP编码错误: {str(e)}\"\n\nif __name__ == \"__main__\":\n    print(\"测试CLIP文本编码模块:\")\n    result = execute(None, \"a beautiful cat\")\n    print(f\"编码结果: {result}\")\n\n\"\"\"\nCLIP文本编码模块\n\n功能：\n- 加载CLIP模型权重\n- 编码提示词为文本向量\n- 支持模型缓存，避免重复加载\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n\n使用场景：\n- 作为Stable Diffusion工作流的提示词编码步骤\n- 在需要文本特征提取的工作流中使用\n\n输入：\n- CLIP模型：CLIP模型文件路径\n- 提示词：需要编码的文本提示词\n\n输出：\n- 文本向量：编码后的文本特征向量",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "模型条件",
+          "name": "CLIP文本编码模块",
+          "output_name": "文本向量",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "CLIP模型,提示词"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "73b45240-9504-4161-b92a-0e13f5b1db86",
+      "name": "VAE解码模块",
+      "kind": "处理模块",
+      "left": "940px",
+      "top": "382px",
+      "moduleData": {
+        "name": "VAE解码模块",
+        "params": {
+          "description": "从gui_settings.json读取生成引擎设置，返回对应的PyTorch设备\n    返回: (device_str, use_half_precision)\n    \"\"\"\n    settings_file = os.path.join(os.getcwd(), \"gui_settings.json\")\n    default_engine = \"CPU\"\n    use_cpu_for_vae = False\n    \n    if os.path.exists(settings_file):\n        try:\n            with open(settings_file, 'r', encoding='utf-8') as f:\n                settings = json.load(f)\n                engine = settings.get(\"生成引擎\", default_engine)\n                use_cpu_for_vae = settings.get(\"使用 CPU 运行 VAE\", False)\n        except Exception as e:\n            print(f\"读取生成引擎设置失败: {e}\")\n            engine = default_engine\n    else:\n        engine = default_engine\n    \n    print(f\"读取到的生成引擎设置: {engine}\")\n    print(f\"读取到的使用 CPU 运行 VAE 设置: {use_cpu_for_vae}\")\n    \n    # 如果启用使用 CPU 运行 VAE\n    if use_cpu_for_vae:\n        print(\"使用 CPU 运行 VAE 已启用，强制使用 CPU\")\n        return \"cpu\", False\n    \n    if engine == \"CPU\":\n        return \"cpu\", False\n    \n    has_cuda = torch.cuda.is_available()\n    \n    gpu_idx = 0\n    match = re.search(r'GPU\\s+(\\d+)', engine)\n    if match:\n        gpu_idx = int(match.group(1))\n    \n    if \"CUDA\" in engine:\n        if has_cuda:\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了CUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"TensorRT\" in engine:\n        if has_cuda:\n            print(\"注意: TensorRT引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了TensorRT引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"DML\" in engine:\n        try:\n            import torch_directml\n            has_dml = True\n        except ImportError:\n            has_dml = False\n        \n        if has_dml:\n            print(f\"使用DML后端，GPU索引: {gpu_idx}\")\n            return f\"privateuseone:{gpu_idx}\", False\n        elif has_cuda:\n            print(\"警告: DML不可用，回退到CUDA\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了DML引擎但DML和CUDA都不可用，回退到CPU\")\n            return \"cpu\", False\n    elif \"ZLUDA\" in engine:\n        if has_cuda:\n            print(\"注意: ZLUDA引擎当前使用CUDA后端\")\n            if gpu_idx < torch.cuda.device_count():\n                return f\"cuda:{gpu_idx}\", True\n            return \"cuda\", True\n        else:\n            print(\"警告: 选择了ZLUDA引擎但CUDA不可用，回退到CPU\")\n            return \"cpu\", False\n    \n    return \"cpu\", False\n\ndef tensor_to_pil(tensor):\n    \"\"\"\n    标准张量转PIL图像（无色彩偏差）\n    \"\"\"\n    # 增加维度校验：确保是4维张量 [B,C,H,W]\n    if len(tensor.shape) == 3:\n        tensor = tensor.unsqueeze(0)\n    # 标准反归一化流程（无偏差）\n    tensor = (tensor / 2 + 0.5).clamp(0, 1)\n    tensor = tensor.cpu().permute(0, 2, 3, 1).numpy()\n    images = (tensor * 255).round().astype(np.uint8)  # round()避免浮点精度导致的偏色\n    pil_images = [Image.fromarray(image) for image in images]\n    return pil_images[0]\n\ndef execute(latents=None, vae_model_path=None):\n    \"\"\"\n    执行模块逻辑\n    \"\"\"\n    global _model_cache\n    \n    # 从字典中提取samples张量\n    if isinstance(latents, dict) and \"samples\" in latents:\n        latents = latents[\"samples\"]\n    \n    print(f\"VAE解码参数: latents形状={latents.shape if latents is not None else 'None'}, 模型路径={vae_model_path}\")\n    \n    try:\n        if latents is None or vae_model_path is None:\n            print(\"错误: 缺少Latent张量或模型路径\")\n            return None\n        \n        # 1. 设备/精度配置（强制对齐）\n        device, use_half = get_device_from_engine_setting()\n        # 确定数据类型（CUDA用fp16，其他用fp32，VAE不支持bf16）\n        if device.startswith(\"cuda\") and use_half:\n            dtype = torch.float16\n        else:\n            dtype = torch.float32\n        print(f\"使用设备: {device}, 数据类型: {dtype}\")\n        \n        # 2. 加载VAE（强制精度/设备对齐）\n        if vae_model_path not in _model_cache:\n            print(\"开始加载VAE模型...\")\n            pipe = StableDiffusionPipeline.from_single_file(\n                vae_model_path,\n                torch_dtype=dtype,\n                use_safetensors=True,\n                safety_checker=None,\n                requires_safety_checker=False  # 新增：避免安全检查器警告\n            )\n            # 强制VAE到指定设备和精度\n            vae = pipe.vae.to(device=device, dtype=dtype)\n            vae.eval()  # 强制进入评估模式（关键！避免训练模式的随机行为）\n            _model_cache[vae_model_path] = vae\n            del pipe  # 释放无关资源\n            # 清空CUDA缓存，避免残留\n            if device == \"cuda\":\n                torch.cuda.empty_cache()\n            print(\"VAE加载完成\")\n        \n        vae = _model_cache[vae_model_path]\n        \n        # 3. Latent预处理（核心修正）\n        # 扩展批次维度：如果是3维 [4,64,64] → 4维 [1,4,64,64]\n        if len(latents.shape) == 3:\n            latents = latents.unsqueeze(0)\n        # 强制对齐设备和精度（CPU下禁用non_blocking）\n        non_blocking = True if device == \"cuda\" else False\n        latents = latents.to(device=device, dtype=dtype, non_blocking=non_blocking)\n        # 标准缩放（必须！）- 解码时用除法还原像素空间\n        latents = latents / vae.config.scaling_factor\n        \n        # 4. VAE解码（兼容CPU/GPU的autocast）\n        autocast_enabled = device == \"cuda\"\n        # 兼容新旧版PyTorch的autocast写法\n        if hasattr(torch.amp, 'autocast'):\n            autocast_ctx = torch.amp.autocast(device_type=\"cuda\" if autocast_enabled else \"cpu\", enabled=autocast_enabled)\n        else:\n            autocast_ctx = torch.cuda.amp.autocast(enabled=autocast_enabled)\n        \n        with torch.no_grad(), autocast_ctx:\n            image_tensor = vae.decode(latents, return_dict=False)[0]\n        \n        # 5. 转PIL图像（无色彩偏差）\n        pil_image = tensor_to_pil(image_tensor)\n        \n        print(f\"VAE解码完成: 图像尺寸={pil_image.size}\")\n        return pil_image\n    \n    except Exception as e:\n        print(f\"VAE解码失败: {str(e)}\")\n        import traceback\n        traceback.print_exc()\n        # 出错后清空缓存，避免下次加载异常\n        if vae_model_path in _model_cache:\n            del _model_cache[vae_model_path]\n        if 'device' in locals() and device == \"cuda\":\n            torch.cuda.empty_cache()\n        return None\n\nif __name__ == \"__main__\":\n    print(\"测试VAE解码模块:\")\n    result = execute(None, None)\n    print(f\"解码结果: {result}\")\n\n\"\"\"\nVAE解码模块（重构版）\n\n功能：\n- 加载VAE模型\n- 正确缩放Latent张量\n- 解码Latent张量为RGB图像\n- 支持模型缓存，提高性能\n- 根据系统设置自动选择最佳设备（CPU/CUDA/DML）\n- 支持从GUI设置中读取VAE运行设备配置\n\n使用场景：\n- 作为Stable Diffusion工作流的最后一步，将生成的Latent解码为图像\n- 在需要将Latent转换为图像的工作流中使用\n\n输入：\n- 生成的Latent张量：潜在空间的图像张量\n- VAE解码器：VAE模型文件路径\n\n输出：\n- RGB图像：解码后的PIL图像对象",
+          "excitedbydata": true,
+          "input_quantity": 2,
+          "kind": "处理模块",
+          "name": "VAE解码模块",
+          "output_name": "RGB图像",
+          "output_quantity": 1,
+          "setting": true,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 2,
+          "variables_name": "生成的Latent张量,VAE解码器"
+        }
+      },
+      "settings": {},
+      "inputValue": ""
+    },
+    {
+      "id": "6572718c-f75f-4be3-809b-7d11c5afe4ca",
+      "name": "图片保存/显示模块",
+      "kind": "输出模块",
+      "left": "1197px",
+      "top": "386px",
+      "moduleData": {
+        "name": "图片保存_显示模块",
+        "params": {
+          "description": "执行模块逻辑\n    :param image: PIL图像对象或图像列表\n    :param save_path: 保存路径\n    :param should_save: 是否保存（默认True）\n    :return: 保存结果信息\n    \"\"\"\n    fallback_save_path = os.path.join(os.getcwd(), \"output\")\n    settings_file = os.path.join(os.getcwd(), \"gui_settings.json\")\n    if os.path.exists(settings_file):\n        try:\n            with open(settings_file, 'r', encoding='utf-8') as f:\n                gui_settings = json.load(f)\n                if \"默认图片保存路径\" in gui_settings:\n                    default_save_path = gui_settings[\"默认图片保存路径\"]\n                    if save_path is None or not save_path:\n                        save_path = default_save_path\n        except Exception as e:\n            print(f\"加载GUI设置失败: {e}\")\n    \n    if save_path is None or not save_path:\n        save_path = fallback_save_path\n    \n    # 处理should_save参数，确保是布尔值\n    if isinstance(should_save, str):\n        should_save = should_save.lower() in ('true', '1', 'yes', 'on')\n    \n    print(f\"图片保存参数: 路径={save_path}, 是否保存={should_save}\")\n    print(f\"输入图像类型: {type(image)}, 值: {image}\")\n    \n    try:\n        if image is None:\n            print(\"错误: 未提供图像\")\n            return f\"操作失败: 未提供图像\"\n        \n        from PIL import Image\n        \n        # 处理批量图像\n        images_to_save = []\n        if isinstance(image, list):\n            images_to_save = image\n        elif isinstance(image, Image.Image):\n            images_to_save = [image]\n        else:\n            print(f\"错误: 图像类型不正确，类型={type(image)}\")\n            return f\"操作失败: 图像类型不正确\"\n        \n        if len(images_to_save) == 0:\n            print(\"错误: 没有图像可保存\")\n            return f\"操作失败: 没有图像可保存\"\n        \n        saved_paths = []\n        if should_save:\n            tried_paths = []\n            timestamp = time.strftime(\"%Y%m%d_%H%M%S\")\n            \n            # 确保保存路径存在\n            for current_path in [save_path, fallback_save_path]:\n                try:\n                    if not os.path.exists(current_path):\n                        try:\n                            os.makedirs(current_path)\n                            print(f\"创建保存路径: {current_path}\")\n                        except Exception as e:\n                            print(f\"创建路径失败: {e}\")\n                            tried_paths.append(f\"{current_path} (创建失败)\")\n                            continue\n                    \n                    # 保存所有图像\n                    for idx, img in enumerate(images_to_save):\n                        if len(images_to_save) == 1:\n                            filename = f\"{timestamp}.png\"\n                        else:\n                            filename = f\"{timestamp}_{idx+1}.png\"\n                        \n                        file_path = os.path.join(current_path, filename)\n                        print(f\"尝试保存图像 {idx+1}/{len(images_to_save)} 到: {file_path}\")\n                        img.save(file_path)\n                        saved_paths.append(file_path)\n                    \n                    # 所有图像保存成功\n                    break\n                    \n                except Exception as e:\n                    print(f\"保存到 {current_path} 失败: {e}\")\n                    tried_paths.append(f\"{current_path} (保存失败)\")\n                    saved_paths = []\n                    continue\n        \n        if should_save and saved_paths:\n            print(f\"图像保存成功: {', '.join(saved_paths)}\")\n            return f\"图像保存成功: {len(saved_paths)} 张\"\n        elif not should_save:\n            print(\"跳过保存，仅显示图像\")\n            return f\"图像显示完成: {len(images_to_save)} 张（未保存）\"\n        else:\n            return f\"操作失败: 所有保存路径都失败了 ({', '.join(tried_paths)})\"\n    \n    except Exception as e:\n        print(f\"图片保存/显示失败: {str(e)}\")\n        import traceback\n        traceback.print_exc()\n        return f\"操作失败: {str(e)}\"\n\nif __name__ == \"__main__\":\n    print(\"测试图片保存/显示模块:\")\n    result = execute(None)\n    print(f\"执行结果: {result}\")\n\n\"\"\"\n图片保存/显示模块\n\n功能：\n- 保存图像到指定路径\n- 显示图像\n- 支持批量图像处理\n- 从GUI设置中读取默认保存路径\n\n使用场景：\n- 作为Stable Diffusion工作流的最后一步，保存和显示生成的图像\n- 在需要保存和显示图像的工作流中使用\n\n输入：\n- RGB图像：PIL图像对象或图像列表\n- 保存路径：图像保存的路径\n- 是否保存：是否保存图像\n\n输出：\n- 无输出端口，只返回保存结果信息",
+          "excitedbydata": true,
+          "input_quantity": 1,
+          "kind": "输出模块",
+          "name": "图片保存/显示模块",
+          "output_quantity": 0,
+          "setting": true,
+          "showingwindow_quantity": 1,
+          "source": "default",
+          "time_late": 0,
+          "userinput": false,
+          "variable_quantity": 3,
+          "variables_name": "RGB图像,保存路径,是否保存"
+        }
+      },
+      "settings": {
+        "RGB图像": "",
+        "保存路径": "F:/2026寒假项目_简单图形化ai调用工具/output",
+        "是否保存": false
+      },
+      "inputValue": ""
+    }
+  ],
+  "connections": [
+    {
+      "startModuleId": "63b8faa6-b75c-4afa-8512-6cf806d99c8f",
+      "startPortIndex": 0,
+      "endModuleId": "b3d87ed3-435d-4159-8a9f-41ca6565c13e",
+      "endPortIndex": 3,
+      "isRed": false
+    },
+    {
+      "startModuleId": "9fa92e93-c425-4148-8557-13ef6a7b8c1c",
+      "startPortIndex": 0,
+      "endModuleId": "86be5135-980b-426c-bd7c-4e3e079d6e94",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "6b21e7df-dae2-4bec-92d2-f1cb6a566de5",
+      "startPortIndex": 0,
+      "endModuleId": "28613521-29d9-4827-baee-1f62221e8161",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "86be5135-980b-426c-bd7c-4e3e079d6e94",
+      "startPortIndex": 0,
+      "endModuleId": "b3d87ed3-435d-4159-8a9f-41ca6565c13e",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "28613521-29d9-4827-baee-1f62221e8161",
+      "startPortIndex": 0,
+      "endModuleId": "b3d87ed3-435d-4159-8a9f-41ca6565c13e",
+      "endPortIndex": 2,
+      "isRed": false
+    },
+    {
+      "startModuleId": "c5609ef3-4b9d-4e41-9e9e-9e93c30b473c",
+      "startPortIndex": 0,
+      "endModuleId": "b3d87ed3-435d-4159-8a9f-41ca6565c13e",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "b3d87ed3-435d-4159-8a9f-41ca6565c13e",
+      "startPortIndex": 0,
+      "endModuleId": "73b45240-9504-4161-b92a-0e13f5b1db86",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "73b45240-9504-4161-b92a-0e13f5b1db86",
+      "startPortIndex": 0,
+      "endModuleId": "6572718c-f75f-4be3-809b-7d11c5afe4ca",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "c5609ef3-4b9d-4e41-9e9e-9e93c30b473c",
+      "startPortIndex": 1,
+      "endModuleId": "73b45240-9504-4161-b92a-0e13f5b1db86",
+      "endPortIndex": 1,
+      "isRed": false
+    },
+    {
+      "startModuleId": "c5609ef3-4b9d-4e41-9e9e-9e93c30b473c",
+      "startPortIndex": 2,
+      "endModuleId": "86be5135-980b-426c-bd7c-4e3e079d6e94",
+      "endPortIndex": 0,
+      "isRed": false
+    },
+    {
+      "startModuleId": "c5609ef3-4b9d-4e41-9e9e-9e93c30b473c",
+      "startPortIndex": 2,
+      "endModuleId": "28613521-29d9-4827-baee-1f62221e8161",
+      "endPortIndex": 0,
+      "isRed": false
+    }
+  ],
+  "canvasSize": {
+    "width": 1700,
+    "height": 1300
+  },
+  "timestamp": "2026-03-14T10:57:19.414Z",
+  "usedCustomModules": []
+}
