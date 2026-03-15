@@ -54,7 +54,7 @@ B站专栏：https://www.bilibili.com/opus/1172650239378587687
 ### 2. 安装方法
   无需安装,下载即用
   github上传的只有源码，没有环境。
-  请前往  下载完整整合包
+  请前往https://pan.baidu.com/s/5_4UA7myq9SwpFJzPLyoF6A下载完整整合包
 
 ### 3. 启动和运行
 
